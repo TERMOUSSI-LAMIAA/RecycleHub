@@ -1,1 +1,99 @@
-<p>register works!</p>
+<form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="max-w-lg mx-auto p-6 bg-white shadow-lg rounded-lg">
+    <h2 class="text-2xl font-bold text-center mb-6">Register</h2>
+
+    <div class="mb-4">
+        <label for="email" class="block font-medium">Email:</label>
+        <input id="email" formControlName="email" type="email"
+            class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        <div *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched"
+            class="text-red-500 text-sm mt-1">
+            <small *ngIf="registerForm.get('email')?.errors?.['required']">Email is required.</small>
+            <small *ngIf="registerForm.get('email')?.errors?.['email']">Invalid email format.</small>
+        </div>
+    </div>
+
+    <div class="mb-4">
+        <label for="password" class="block font-medium">Password:</label>
+        <input id="password" formControlName="password" type="password"
+            class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        <div *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched"
+            class="text-red-500 text-sm mt-1">
+            <small *ngIf="registerForm.get('password')?.errors?.['required']">Password is required.</small>
+            <small *ngIf="registerForm.get('password')?.errors?.['minlength']">Must be at least 6 characters.</small>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4">
+        <div>
+            <label for="firstName" class="block font-medium">First Name:</label>
+            <input id="firstName" formControlName="firstName"
+                class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            <div *ngIf="registerForm.get('firstName')?.invalid && registerForm.get('firstName')?.touched"
+                class="text-red-500 text-sm mt-1">
+                <small *ngIf="registerForm.get('firstName')?.errors?.['required']">First name is required.</small>
+            </div>
+        </div>
+
+        <div>
+            <label for="lastName" class="block font-medium">Last Name:</label>
+            <input id="lastName" formControlName="lastName"
+                class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            <div *ngIf="registerForm.get('lastName')?.invalid && registerForm.get('lastName')?.touched"
+                class="text-red-500 text-sm mt-1">
+                <small *ngIf="registerForm.get('lastName')?.errors?.['required']">Last name is required.</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="mb-4">
+        <label for="address" class="block font-medium">Address:</label>
+        <input id="address" formControlName="address"
+            class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        <div *ngIf="registerForm.get('address')?.invalid && registerForm.get('address')?.touched"
+            class="text-red-500 text-sm mt-1">
+            <small *ngIf="registerForm.get('address')?.errors?.['required']">Address is required.</small>
+        </div>
+    </div>
+
+    <div class="mb-4">
+        <label for="phone" class="block font-medium">Phone:</label>
+        <input id="phone" formControlName="phone"
+            class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        <div *ngIf="registerForm.get('phone')?.invalid && registerForm.get('phone')?.touched"
+            class="text-red-500 text-sm mt-1">
+            <small *ngIf="registerForm.get('phone')?.errors?.['required']">Phone number is required.</small>
+        </div>
+    </div>
+
+    <div class="mb-4">
+        <label for="birthDate" class="block font-medium">Birth Date:</label>
+        <input id="birthDate" formControlName="birthDate" type="date"
+            class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        <div *ngIf="registerForm.get('birthDate')?.invalid && registerForm.get('birthDate')?.touched"
+            class="text-red-500 text-sm mt-1">
+            <small *ngIf="registerForm.get('birthDate')?.errors?.['required']">Birth date is required.</small>
+        </div>
+    </div>
+
+    <div class="mb-4">
+        <label for="profileImage" class="block font-medium">Profile Image (URL):</label>
+        <input id="profileImage" formControlName="profileImage"
+            class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+    </div>
+
+    <div class="mb-4">
+        <label for="city" class="block font-medium">City:</label>
+        <input id="city" formControlName="city"
+            class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        <div *ngIf="registerForm.get('city')?.invalid && registerForm.get('city')?.touched"
+            class="text-red-500 text-sm mt-1">
+            <small *ngIf="registerForm.get('city')?.errors?.['required']">City is required.</small>
+        </div>
+    </div>
+
+    <button type="submit"
+        class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md transition disabled:bg-gray-400"
+        [disabled]="registerForm.invalid">
+        Register
+    </button>
+</form>
