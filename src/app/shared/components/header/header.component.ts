@@ -14,7 +14,7 @@ import { CommonModule } from '@angular/common';
 export class HeaderComponent {
   isLoggedIn$!: Observable<boolean>;
 
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService, private router: Router) { }
 
   ngOnInit(): void {
     this.isLoggedIn$ = this.authService.currentUser$.pipe(
@@ -24,5 +24,6 @@ export class HeaderComponent {
 
   logout(): void {
     this.authService.logout();
+    this.router.navigate(['/login']);
   }
 }

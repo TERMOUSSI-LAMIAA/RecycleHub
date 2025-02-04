@@ -71,6 +71,7 @@ export class AuthService {
 
   logout(): void {
     this.localStorageService.removeItem(this.CURRENT_USER_KEY);
+    this.currentUserSubject.next(null);
   }
 
   getCurrentUser(): User | null {
