@@ -5,13 +5,13 @@ import * as AuthActions from '../../store/auth.actions';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../../core/services/auth.service'
 import { catchError, delay, filter, of, take } from 'rxjs';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { selectUser } from '../../store/auth.selectors';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss'
 })
