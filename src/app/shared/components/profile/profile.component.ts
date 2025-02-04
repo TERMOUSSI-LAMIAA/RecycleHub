@@ -4,17 +4,19 @@ import { User } from '../../../core/models/user.model';
 import { AuthService } from '../../../core/services/auth.service';
 import { Router } from '@angular/router';
 import { catchError, of } from 'rxjs';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [ReactiveFormsModule,],
+  imports: [ReactiveFormsModule,CommonModule],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss'
 })
 export class ProfileComponent implements OnInit {
   profileForm: FormGroup;
   currentUser: User | null = null;
+  updateSuccess: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -23,13 +25,13 @@ export class ProfileComponent implements OnInit {
   ) {
     // Initialize the form with validation
     this.profileForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      firstName: ['', Validators.required],
-      lastName: ['', Validators.required],
-      address: [''],
-      phone: [''],
-      birthDate: [''],
-      city: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]], // Required
+      firstName: ['', Validators.required], // Required
+      lastName: ['', Validators.required], // Required
+      address: ['', Validators.required], // Required
+      phone: ['', Validators.required], // Required
+      birthDate: ['', Validators.required], // Required
+      city: ['', Validators.required], // Required
       profileImage: [''] // Optional field
     });
   }
@@ -55,8 +57,10 @@ export class ProfileComponent implements OnInit {
       ).subscribe(user => {
         if (user) {
           console.log('Profile updated successfully:', user);
-          // Optionally show a success message or navigate somewhere
-        }
+          this.updateSuccess = true; 
+          setTimeout(() => {
+            this.updateSuccess = false; // Reset success flag after a delay
+          }, 3000)        }
       });
     }
   }
