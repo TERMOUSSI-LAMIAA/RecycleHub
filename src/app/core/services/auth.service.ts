@@ -106,4 +106,38 @@ export class AuthService {
       );
     }
   }
+
+  updateUser(updatedUserData: Partial<User>): Observable<User> {
+    const users = this.getUsers();
+    const currentUser = this.getCurrentUser();
+
+    if (currentUser) {
+      const index = users.findIndex(u => u.id === currentUser.id);
+      if (index !== -1) {
+        // Update user data
+        users[index] = { ...users[index], ...updatedUserData };
+        this.localStorageService.setItem(this.USERS_KEY, JSON.stringify(users));
+        this.localStorageService.setItem(this.CURRENT_USER_KEY, JSON.stringify(users[index]));
+        this.currentUserSubject.next(users[index]); // Update current user
+        return of(users[index]).pipe(delay(1000)); // Simulate delay for demo purposes
+      }
+    }
+
+    return throwError(() => new Error('User not found'));
+  }
+  
+  deleteAccount(): Observable<void> {
+    const users = this.getUsers();
+    const currentUser = this.getCurrentUser();
+
+    if (currentUser) {
+      const updatedUsers = users.filter(u => u.id !== currentUser.id);
+      this.localStorageService.setItem(this.USERS_KEY, JSON.stringify(updatedUsers));
+      this.localStorageService.removeItem(this.CURRENT_USER_KEY);
+      this.currentUserSubject.next(null); // Clear current user
+      return of(undefined).pipe(delay(1000)); // Simulate delay for demo purposes
+    }
+
+    return throwError(() => new Error('User not found'));
+  }
 }
