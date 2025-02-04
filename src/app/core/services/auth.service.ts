@@ -66,6 +66,7 @@ export class AuthService {
       this.CURRENT_USER_KEY,
       JSON.stringify(newUser)
     );
+    this.currentUserSubject.next(newUser); 
     return of(newUser).pipe(delay(1000));
   }
 

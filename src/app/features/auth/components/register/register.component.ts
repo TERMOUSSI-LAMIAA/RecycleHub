@@ -14,6 +14,7 @@ import { CommonModule } from '@angular/common';
 })
 export class RegisterComponent {
   registerForm: FormGroup;
+  errorMessage: string | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -25,11 +26,11 @@ export class RegisterComponent {
       password: ['', [Validators.required, Validators.minLength(6)]],
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
-      address: ['', Validators.required], // Required
-      phone: ['', Validators.required], // Required
-      birthDate: ['', Validators.required], // Required
-      profileImage: [''], // Optional field
-      city: ['', Validators.required] // Required
+      address: ['', Validators.required], 
+      phone: ['', Validators.required], 
+      birthDate: ['', Validators.required], 
+      profileImage: [''], 
+      city: ['', Validators.required] 
     });
   }
 
@@ -37,8 +38,9 @@ export class RegisterComponent {
     if (this.registerForm.valid) {
       this.authService.register(this.registerForm.value).pipe(
         catchError(error => {
+          this.errorMessage = error.message;
           console.error('Registration failed:', error.message);
-          return of(null); // Handle error appropriately
+          return of(null); 
         })
       ).subscribe(user => {
         if (user) {
