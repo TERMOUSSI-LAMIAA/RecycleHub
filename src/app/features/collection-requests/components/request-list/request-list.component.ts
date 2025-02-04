@@ -16,9 +16,9 @@ export class RequestListComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    const user = this.authService.getCurrentUser();
-    if (user?.userType !== 'individual') {
-      this.router.navigate(['/login']);
-    }
+    // const user = this.authService.getCurrentUser();
+    // if (user?.userType !== 'individual') {
+    //   this.router.navigate(['/login']);
+    // }
   }
 }

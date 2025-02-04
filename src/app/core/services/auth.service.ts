@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { LoginCredentials, RegisterCredentials, User } from '../models/user.model';
-import { delay, Observable, of, throwError } from 'rxjs';
+import { BehaviorSubject, delay, Observable, of, throwError } from 'rxjs';
 import { LocalStorageService } from './local-storage.service';
 
 @Injectable({
@@ -10,8 +10,21 @@ export class AuthService {
   private readonly USERS_KEY = 'users';
   private readonly CURRENT_USER_KEY = 'currentUser';
 
+  // Add a BehaviorSubject to track authentication state
+  private currentUserSubject = new BehaviorSubject<User | null>(null);
+  public currentUser$ = this.currentUserSubject.asObservable();
+  
   constructor(private localStorageService: LocalStorageService) {
     this.initializeCollectors();
+    this.loadCurrentUser();
+  }
+
+  private loadCurrentUser(): void {
+    const user = this.getCurrentUser();
+    this.currentUserSubject.next(user);
+  }
+  isAuthenticated(): boolean {
+    return this.currentUserSubject.value !== null;
   }
 
   login(credentials: LoginCredentials): Observable<User> {
@@ -26,6 +39,7 @@ export class AuthService {
         this.CURRENT_USER_KEY,
         JSON.stringify(user)
       );
+      this.currentUserSubject.next(user);
       return of(user).pipe(delay(1000));
     }
     return throwError(() => new Error('Invalid credentials'));

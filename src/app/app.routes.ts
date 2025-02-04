@@ -12,11 +12,17 @@ export const routes: Routes = [
     {
         path: 'requests/list',
         component: RequestListComponent,
-        // canActivate: [authGuard] 
+        canActivate: [authGuard],
+        data: {
+            allowedUserTypes: ['individual']
+        }
     },
     {
         path: 'collector/dashboard',
         component: CollectorDashboardComponent,
-        // canActivate: [authGuard] 
+        canActivate: [authGuard],
+        data: {
+            allowedUserTypes: ['collector']
+        }
     }
 ];

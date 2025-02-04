@@ -4,7 +4,7 @@ import { Store } from '@ngrx/store';
 import * as AuthActions from '../../store/auth.actions';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../../core/services/auth.service'
-import { catchError, filter, of, take } from 'rxjs';
+import { catchError, delay, filter, of, take } from 'rxjs';
 import { Router } from '@angular/router';
 import { selectUser } from '../../store/auth.selectors';
 
@@ -35,6 +35,8 @@ export class LoginComponent {
     if (this.loginForm.valid) {
       this.authService.login(this.loginForm.value)
         .pipe(
+          // Wait a bit to ensure authentication state is updated
+          delay(100),
           catchError(error => {
             console.error('Login failed:', error);
             this.errorMessage = error.message || 'Login failed';
@@ -44,22 +46,25 @@ export class LoginComponent {
         .subscribe(user => {
           if (user) {
             console.log('User logged in:', user);
+            // First dispatch the action
+            this.store.dispatch(AuthActions.loginSuccess({ user }));
 
-            // Add more detailed logging
-            if (user.userType === 'individual') {
-              console.log('Navigating to requests list');
-              this.router.navigate(['/requests/list'])
-                .then(success => console.log('Navigation success:', success))
-                .catch(err => console.error('Navigation error:', err));
-            } else if (user.userType === 'collector') {
-              console.log('Navigating to collector dashboard');
-              this.router.navigate(['/collector/dashboard'])
-                .then(success => console.log('Navigation success:', success))
-                .catch(err => console.error('Navigation error:', err));
-            }
+            // Wait for the next tick to ensure store is updated
+            setTimeout(() => {
+              if (user.userType === 'individual') {
+                console.log('Navigating to requests list');
+                this.router.navigate(['/requests/list'])
+                  .then(success => console.log('Navigation success:', success))
+                  .catch(err => console.error('Navigation error:', err));
+              } else if (user.userType === 'collector') {
+                console.log('Navigating to collector dashboard');
+                this.router.navigate(['/collector/dashboard'])
+                  .then(success => console.log('Navigation success:', success))
+                  .catch(err => console.error('Navigation error:', err));
+              }
+            }, 0);
           }
         });
     }
   }
-  
 }

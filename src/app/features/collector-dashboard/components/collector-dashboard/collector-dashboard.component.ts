@@ -16,9 +16,9 @@ export class CollectorDashboardComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    const user = this.authService.getCurrentUser();
-    if (user?.userType !== 'collector') {
-      this.router.navigate(['/login']);
-    }
+    // const user = this.authService.getCurrentUser();
+    // if (user?.userType !== 'collector') {
+    //   this.router.navigate(['/login']);
+    // }
   }
 }
