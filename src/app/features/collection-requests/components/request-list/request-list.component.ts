@@ -5,6 +5,10 @@ import { CollectionRequestService } from '../../../../core/services/collection-r
 import { CollectionRequest } from '../../../../core/models/request.model';
 import { RequestFormComponent } from '../request-form/request-form.component';
 import { CommonModule } from '@angular/common';
+import { Observable } from 'rxjs';
+import { loadRequests } from '../../store/collection-requests.actions';
+import { Store } from '@ngrx/store';
+import { selectRequests } from '../../store/request.selectors';
 
 @Component({
   selector: 'app-request-list',
@@ -14,36 +18,24 @@ import { CommonModule } from '@angular/common';
   styleUrl: './request-list.component.scss'
 })
 export class RequestListComponent implements OnInit {
-  requests: CollectionRequest[] = [];
+  requests$: Observable<CollectionRequest[]> | undefined;
   showRequestForm = false;
 
   constructor(
-    private authService: AuthService,
-    private route: ActivatedRoute,
-    private requestService: CollectionRequestService
+    private store: Store
   ) { }
 
   ngOnInit() {
-    this.route.data.subscribe(data => {
-      this.requests = data['requests']; 
-    });
+    this.store.dispatch(loadRequests());
+    this.requests$ = this.store.select(selectRequests); 
   }
 
-  loadRequests() {
-    this.requestService.getUserRequests().subscribe({
-      next: (requests) => {
-        this.requests = requests;
-      },
-      error: (error) => {
-        console.error('Error loading requests:', error);
-      }
-    });
-  }
+
 
   onFormSubmitted(success: boolean) {
     if (success) {
       this.showRequestForm = false;
-      this.loadRequests(); 
+      this.store.dispatch(loadRequests());
     }
   }
 
