@@ -5,6 +5,7 @@ import { RequestListComponent } from './features/collection-requests/components/
 import { CollectorDashboardComponent } from './features/collector-dashboard/components/collector-dashboard/collector-dashboard.component';
 import { authGuard } from './core/guards/auth.guard';
 import { ProfileComponent } from './shared/components/profile/profile.component';
+import { RequestResolver } from './core/resolvers/request.resolver';
 
 export const routes: Routes = [
     // { path: '', component: LoginComponent },
@@ -16,6 +17,9 @@ export const routes: Routes = [
         canActivate: [authGuard],
         data: {
             allowedUserTypes: ['individual']
+        },
+        resolve: {
+            requests: RequestResolver
         }
     },
     {

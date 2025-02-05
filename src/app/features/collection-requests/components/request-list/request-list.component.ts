@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../../../core/services/auth.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CollectionRequestService } from '../../../../core/services/collection-request.service';
 import { CollectionRequest } from '../../../../core/models/request.model';
 import { RequestFormComponent } from '../request-form/request-form.component';
@@ -19,12 +19,14 @@ export class RequestListComponent implements OnInit {
 
   constructor(
     private authService: AuthService,
-    private router: Router,
+    private route: ActivatedRoute,
     private requestService: CollectionRequestService
   ) { }
 
   ngOnInit() {
-    this.loadRequests();
+    this.route.data.subscribe(data => {
+      this.requests = data['requests']; 
+    });
   }
 
   loadRequests() {
@@ -41,7 +43,7 @@ export class RequestListComponent implements OnInit {
   onFormSubmitted(success: boolean) {
     if (success) {
       this.showRequestForm = false;
-      this.loadRequests(); // Refresh the list
+      this.loadRequests(); 
     }
   }
 
