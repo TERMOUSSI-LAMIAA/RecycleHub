@@ -1,1 +1,86 @@
-<p>request-form works!</p>
+<div class="p-6 bg-white shadow-md rounded-lg">
+    <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-bold">New Collection Request</h2>
+        <button (click)="onCancel()" class="text-gray-500 hover:text-gray-700">
+            ✕
+        </button>
+    </div>
+
+    <!-- Display Error Message -->
+    <div *ngIf="errorMessage" class="bg-red-100 text-red-700 p-3 rounded-md text-sm mb-3">
+        {{ errorMessage }}
+    </div>
+
+    <form [formGroup]="requestForm" (ngSubmit)="onSubmit()" class="space-y-6">
+        <div>
+            <label class="block mb-2 font-medium">Types of Waste<span class="text-red-500">*</span></label>
+            <div class="flex flex-wrap gap-3">
+                <label *ngFor="let type of wasteTypes" class="inline-flex items-center">
+                    <input type="checkbox" [value]="type" (change)="onWasteTypeChange($event)" class="form-checkbox">
+                    <span class="ml-2">{{ type }}</span>
+                </label>
+            </div>
+        </div>
+
+        <div>
+            <label class="block mb-2 font-medium">Estimated Weight (g)<span class="text-red-500">*</span></label>
+            <input type="number" formControlName="estimatedWeight" min="1000" placeholder="Enter weight in grams"
+                class="w-full p-2 border rounded focus:outline-none focus:ring focus:ring-blue-300">
+            <p *ngIf="requestForm.get('estimatedWeight')?.errors?.['min']" class="text-red-500 text-sm mt-1">
+                Minimum weight is 1000g.
+            </p>
+            <p *ngIf="requestForm.get('estimatedWeight')?.errors?.['required'] && requestForm.get('estimatedWeight')?.touched"
+                class="text-red-500 text-sm mt-1">Weight is required.</p>
+            <p *ngIf="requestForm.get('estimatedWeight')?.errors?.['notANumber'] && requestForm.get('estimatedWeight')?.touched"
+                class="text-red-500 text-sm mt-1">Please enter a valid number.</p>
+        </div>
+
+        <div>
+            <label class="block mb-2 font-medium">Collection Address<span class="text-red-500">*</span></label>
+            <input type="text" formControlName="collectAddress" placeholder="Enter collection address"
+                class="w-full p-2 border rounded focus:outline-none focus:ring focus:ring-blue-300">
+            <p *ngIf="requestForm.get('collectAddress')?.errors?.['required'] && requestForm.get('collectAddress')?.touched"
+                class="text-red-500 text-sm mt-1">Address is required.</p>
+        </div>
+
+        <div>
+            <label class="block mb-2 font-medium">Collection Date<span class="text-red-500">*</span></label>
+            <input type="date" formControlName="scheduledDate"
+                class="w-full p-2 border rounded focus:outline-none focus:ring focus:ring-blue-300">
+
+            <!-- Error message for invalid date -->
+            <p *ngIf="requestForm.get('scheduledDate')?.errors?.['futureDate'] && requestForm.get('scheduledDate')?.touched"
+                class="text-red-500 text-sm mt-1">The collection date must be in the future.</p>
+        </div>
+
+        <div>
+            <label class="block mb-2 font-medium">Time Slot<span class="text-red-500">*</span></label>
+            <select formControlName="scheduledTimeSlot"
+                class="w-full p-2 border rounded focus:outline-none focus:ring focus:ring-blue-300">
+                <option value="">Select a time slot</option>
+                <option *ngFor="let slot of timeSlots" [value]="slot">{{ slot }}</option>
+            </select>
+            <p *ngIf="requestForm.get('scheduledTimeSlot')?.errors?.['required'] && requestForm.get('scheduledTimeSlot')?.touched"
+                class="text-red-500 text-sm mt-1">Time slot is required.</p>
+        </div>
+
+        <div>
+            <label class="block mb-2 font-medium">Additional notes</label>
+            <textarea formControlName="additionalNotes" rows="3" placeholder="Any additional notes..."
+                class="w-full p-2 border rounded focus:outline-none focus:ring focus:ring-blue-300"></textarea>
+        </div>
+
+        <div>
+            <label class="block mb-2 font-medium">Photos</label>
+            <input type="file" (change)="onFileChange($event)" multiple accept="image/*"
+                class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+        </div>
+
+        <!-- Buttons -->
+        <div class="flex justify-end gap-3 mt-6">
+            <button type="button" (click)="onCancel()" class="px-4 py-2 border rounded hover:bg-gray-50">Cancel</button>
+            <button type="submit" [disabled]="requestForm.invalid"
+                class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50">Submit</button>
+        </div>
+    </form>
+</div>

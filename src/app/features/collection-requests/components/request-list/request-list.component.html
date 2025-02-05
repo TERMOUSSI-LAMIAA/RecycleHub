@@ -1,1 +1,42 @@
-<h1>Mes Demandes de Collecte</h1>
+<div class="container mx-auto p-4">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold">Mes Demandes de Collecte</h1>
+        <button (click)="showRequestForm = true" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+            New Request
+        </button>
+    </div>
+
+    <!-- Request List -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div *ngFor="let request of requests" class="border rounded-lg p-4 shadow-sm">
+            <div class="font-bold mb-2">Demande #{{ request.id }}</div>
+            <div class="text-sm text-gray-600 mb-2">{{ request.scheduledDate | date }}</div>
+            <div class="space-y-1">
+                <p><strong>Status:</strong> {{ request.status }}</p>
+                <p><strong>Types de déchets:</strong> {{ request.wasteTypes.join(', ') }}</p>
+                <p><strong>Poids estimé:</strong> {{ request.estimatedWeight }}g</p>
+                <p><strong>Créneau horaire:</strong> {{ request.scheduledTimeSlot }}</p>
+            </div>
+
+            <!-- Edit and Delete Buttons -->
+            <div *ngIf="request.status === 'pending'" class="mt-4 flex space-x-2">
+                <button (click)="editRequest(request)"
+                    class="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600">
+                    Edit
+                </button>
+                <button (click)="deleteRequest(request.id)"
+                    class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">
+                    Delete
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Overlay Form -->
+    <div *ngIf="showRequestForm" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <app-request-form (formSubmitted)="onFormSubmitted($event)"
+                (formCancelled)="showRequestForm = false"></app-request-form>
+        </div>
+    </div>
+</div>
