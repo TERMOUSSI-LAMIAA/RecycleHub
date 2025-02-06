@@ -6,7 +6,8 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { futureDateValidator } from '../../../../core/validators/future-date.validator';
 import { numberValidator } from '../../../../core/validators/number.validator';
-
+import { Store } from '@ngrx/store';
+import * as CollectionRequestActions from '../../store/collection-requests.actions';
 @Component({
   selector: 'app-request-form',
   standalone: true,
@@ -32,6 +33,7 @@ export class RequestFormComponent {
 
   constructor(
     private fb: FormBuilder,
+    private store: Store, 
     private requestService: CollectionRequestService
   ) {
     this.requestForm = this.fb.group({
@@ -71,24 +73,12 @@ export class RequestFormComponent {
   onSubmit() {
     if (this.requestForm.valid) {
       const formValue = this.requestForm.value;
-      this.requestService.createRequest({
-        ...formValue,
-        photos: this.selectedPhotos
-      }).subscribe({
-        next: (request) => {
-          console.log('Request created:', request);
-          this.formSubmitted.emit(true);
-          this.errorMessage = null;
-        },
-        error: (err) => {
-          console.error('Error creating request:', err);
-          this.formSubmitted.emit(false);
-          this.errorMessage =err
-        }
-      });
+      this.store.dispatch(CollectionRequestActions.createRequest({ requestData: { ...formValue, photos: this.selectedPhotos } }));
+      this.formSubmitted.emit(true);
+    } else {
+      this.formSubmitted.emit(false);
     }
   }
-
   onCancel() {
     this.formCancelled.emit();
     this.errorMessage = null;

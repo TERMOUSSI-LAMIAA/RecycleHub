@@ -21,7 +21,18 @@ export class CollectionRequestsEffects {
             )
         )
     );
-
+    
+    createRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(RequestActions.createRequest),
+            mergeMap((action) =>
+                this.requestService.createRequest(action.requestData).pipe(
+                    map((request) => RequestActions.createRequestSuccess({ request })),
+                    catchError((error) => of(RequestActions.createRequestFailure({ error: error.message })))
+                )
+            )
+        ));
+    
     deleteRequest$ = createEffect(() =>
         this.actions$.pipe(
             ofType(RequestActions.deleteRequest),  // ✅ Use correct action

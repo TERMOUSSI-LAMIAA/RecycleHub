@@ -8,3 +8,18 @@ export const loadRequestsFailure = createAction('[Request List] Load Requests Fa
 export const deleteRequest = createAction('[Request List] Delete Request', props<{ requestId: string }>());
 export const deleteRequestSuccess = createAction('[Request List] Delete Request Success', props<{ requestId: string }>());
 export const deleteRequestFailure = createAction('[Request List] Delete Request Failure', props<{ error: string }>());
+
+export const createRequest = createAction(
+    '[Request Form] Create Request',
+    props<{ requestData: any }>()  // ? any -> actual type 
+);
+
+export const createRequestSuccess = createAction(
+    '[Request Form] Create Request Success',
+    props<{ request: CollectionRequest }>()
+);
+
+export const createRequestFailure = createAction(
+    '[Request Form] Create Request Failure',
+    props<{ error: string }>()
+);
