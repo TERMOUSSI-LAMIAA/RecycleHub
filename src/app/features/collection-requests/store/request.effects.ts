@@ -45,5 +45,21 @@ export class CollectionRequestsEffects {
         )
     );
 
+    updateRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(RequestActions.updateRequest),
+            mergeMap(({ requestId, updatedData }) =>
+                this.requestService.updateRequest(requestId, updatedData).pipe(
+                    map((updatedRequest) =>
+                        RequestActions.updateRequestSuccess({ updatedRequest })
+                    ),
+                    catchError((error) =>
+                        of(RequestActions.updateRequestFailure({ error: error.message }))
+                    )
+                )
+            )
+        )
+    );
+
     constructor(private actions$: Actions, private requestService: CollectionRequestService) { }
 }

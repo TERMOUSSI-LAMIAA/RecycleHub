@@ -23,3 +23,19 @@ export const createRequestFailure = createAction(
     '[Request Form] Create Request Failure',
     props<{ error: string }>()
 );
+
+export const updateRequest = createAction(
+    '[Collection Request] Update Request',
+    props<{ requestId: string; updatedData: Partial<CollectionRequest> }>()
+);
+
+export const updateRequestSuccess = createAction(
+    '[Collection Request] Update Request Success',
+    props<{ updatedRequest: CollectionRequest }>()
+);
+
+export const updateRequestFailure = createAction(
+    '[Collection Request] Update Request Failure',
+    props<{ error: string }>()
+);
+export const clearRequestError = createAction('[Collection Request] Clear Error');

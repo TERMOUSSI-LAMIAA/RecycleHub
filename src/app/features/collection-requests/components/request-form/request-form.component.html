@@ -10,9 +10,6 @@
     <div *ngIf="errorMessage" class="bg-red-100 text-red-700 p-3 rounded-md text-sm mb-3">
         {{ errorMessage }}
     </div>
-    <!-- <div *ngIf="error$ | async as error" class="bg-red-100 text-red-700 p-3 rounded-md text-sm mb-3">
-        {{ error }}
-    </div> -->
 
 
     <form [formGroup]="requestForm" (ngSubmit)="onSubmit()" class="space-y-6">
@@ -20,7 +17,10 @@
             <label class="block mb-2 font-medium">Types of Waste<span class="text-red-500">*</span></label>
             <div class="flex flex-wrap gap-3">
                 <label *ngFor="let type of wasteTypes" class="inline-flex items-center">
-                    <input type="checkbox" [value]="type" (change)="onWasteTypeChange($event)" class="form-checkbox">
+                   
+                    <input type="checkbox" [value]="type" (change)="onWasteTypeChange($event)" class="form-checkbox"
+                        [checked]="isChecked(type)" 
+                    >
                     <span class="ml-2">{{ type }}</span>
                 </label>
             </div>

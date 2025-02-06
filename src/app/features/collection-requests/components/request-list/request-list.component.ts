@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { AuthService } from '../../../../core/services/auth.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CollectionRequestService } from '../../../../core/services/collection-request.service';
@@ -20,7 +20,9 @@ import { selectRequests } from '../../store/request.selectors';
 export class RequestListComponent implements OnInit {
   requests$: Observable<CollectionRequest[]> | undefined;
   showRequestForm = false;
-
+  isEditMode: boolean = false; 
+  currentRequest: CollectionRequest | null = null;
+  @ViewChild(RequestFormComponent) requestFormComponent: RequestFormComponent | undefined;  
   constructor(
     private store: Store
   ) { this.requests$ = this.store.select(selectRequests); }
@@ -30,20 +32,23 @@ export class RequestListComponent implements OnInit {
   }
 
 
-
   onFormSubmitted(success: boolean) {
     if (success) {
       this.showRequestForm = false;
+      this.currentRequest = null;  
       this.store.dispatch(loadRequests());
+   
     }
   }
-
+  openNewRequestForm() {
+    this.showRequestForm = true;
+    this.currentRequest = null; 
+    this.isEditMode = false;
+  }
   editRequest(request: CollectionRequest) {
-    // Logic to open the edit form with pre-filled data
-    // You may want to set up a mechanism to pass the selected request data to the form
     console.log('Editing request:', request);
-    this.showRequestForm = true; // Show the form for editing
-    // You can also pass the current request data to the form component if needed
+    this.showRequestForm = true;
+    this.currentRequest = request; 
   }
 
   deleteRequest(requestId: string) {

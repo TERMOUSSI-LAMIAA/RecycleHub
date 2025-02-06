@@ -1,7 +1,7 @@
 <div class="container mx-auto p-4">
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-bold">Mes Demandes de Collecte</h1>
-        <button (click)="showRequestForm = true" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+        <button (click)="openNewRequestForm()"  class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
             New Request
         </button>
     </div>
@@ -42,7 +42,7 @@
     <!-- Overlay Form -->
     <div *ngIf="showRequestForm" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div class="bg-white rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <app-request-form (formSubmitted)="onFormSubmitted($event)"
+            <app-request-form  (formSubmitted)="onFormSubmitted($event)"   [requestToEdit]="currentRequest"
                 (formCancelled)="showRequestForm = false"></app-request-form>
         </div>
     </div>
