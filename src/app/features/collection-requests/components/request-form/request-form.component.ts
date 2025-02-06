@@ -8,6 +8,8 @@ import { futureDateValidator } from '../../../../core/validators/future-date.val
 import { numberValidator } from '../../../../core/validators/number.validator';
 import { Store } from '@ngrx/store';
 import * as CollectionRequestActions from '../../store/collection-requests.actions';
+import { Observable, take } from 'rxjs';
+import { selectRequestError } from '../../store/request.selectors';
 @Component({
   selector: 'app-request-form',
   standalone: true,
@@ -30,7 +32,7 @@ export class RequestFormComponent {
   selectedPhotos: string[] = [];
 
   errorMessage: string | null = null;
-
+  error$: Observable<string | null>;
   constructor(
     private fb: FormBuilder,
     private store: Store, 
@@ -44,9 +46,13 @@ export class RequestFormComponent {
       scheduledTimeSlot: ['', Validators.required],
       additionalNotes: ['']
     });
+    this.error$ = this.store.select(selectRequestError);
   }
 
-  ngOnInit() { }
+  ngOnInit() {
+    this.error$.subscribe((error) => {
+      this.errorMessage = error;
+    }); }
 
   onWasteTypeChange(event: any) {
     const type = event.target.value;
@@ -69,16 +75,39 @@ export class RequestFormComponent {
       reader.readAsDataURL(files[i]);
     }
   }
-
   onSubmit() {
     if (this.requestForm.valid) {
       const formValue = this.requestForm.value;
+      this.errorMessage = null;
+
       this.store.dispatch(CollectionRequestActions.createRequest({ requestData: { ...formValue, photos: this.selectedPhotos } }));
-      this.formSubmitted.emit(true);
+
+      // Subscribe to the Observable returned by the action
+      this.store.select(selectRequestError).pipe(
+        take(1) // Ensure it only checks once
+      ).subscribe(error => {
+        if (error) {
+          this.formSubmitted.emit(false);
+          this.errorMessage = error;  // Show the error message from the state
+        } else {
+          this.formSubmitted.emit(true);
+          this.errorMessage = null;  // Reset the error message if no error
+        }
+      });
     } else {
       this.formSubmitted.emit(false);
     }
   }
+  // onSubmit() {
+  //   if (this.requestForm.valid) {
+  //     const formValue = this.requestForm.value;
+  //     this.errorMessage = null;
+  //     this.store.dispatch(CollectionRequestActions.createRequest({ requestData: { ...formValue, photos: this.selectedPhotos } }));
+  //     this.formSubmitted.emit(true);
+  //   } else {
+  //     this.formSubmitted.emit(false);
+  //   }
+  // }
   onCancel() {
     this.formCancelled.emit();
     this.errorMessage = null;

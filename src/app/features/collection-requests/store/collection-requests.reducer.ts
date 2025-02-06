@@ -5,11 +5,13 @@ import { createRequest, createRequestFailure, createRequestSuccess, deleteReques
 export interface CollectionRequestState {
     requests: CollectionRequest[];
     error: string | null;
+    loading: boolean;
 }
 
 export const initialState: CollectionRequestState = {
     requests: [],
-    error: null
+    error: null,
+        loading: false
 };
 
 export const collectionRequestsReducer = createReducer(
@@ -27,8 +29,8 @@ export const collectionRequestsReducer = createReducer(
         ...state,
         requests: [...state.requests, request]
     })),
-    on(createRequestFailure, (state, { error }) => ({
-        ...state,
-        error
-    }))
+    on(createRequestFailure, (state, { error }) => {
+        console.log("Reducer handling createRequestFailure:", error);
+    return { ...state, loading: false, error };
+    })
 );

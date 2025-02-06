@@ -42,6 +42,7 @@ export class CollectionRequestService {
         );
 
         if (userRequests.length >= 3) {
+            console.log("Too many pending requests!"); 
             return throwError(() => new Error('Maximum 3 simultaneous requests allowed'));
         }
 

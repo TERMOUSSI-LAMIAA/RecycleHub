@@ -10,6 +10,10 @@
     <div *ngIf="errorMessage" class="bg-red-100 text-red-700 p-3 rounded-md text-sm mb-3">
         {{ errorMessage }}
     </div>
+    <!-- <div *ngIf="error$ | async as error" class="bg-red-100 text-red-700 p-3 rounded-md text-sm mb-3">
+        {{ error }}
+    </div> -->
+
 
     <form [formGroup]="requestForm" (ngSubmit)="onSubmit()" class="space-y-6">
         <div>
