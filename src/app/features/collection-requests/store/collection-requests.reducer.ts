@@ -1,29 +1,20 @@
 import { createReducer, on } from '@ngrx/store';
-import { loadRequests } from './collection-requests.actions';
 import { CollectionRequest } from '../../../core/models/request.model';
+import { deleteRequestSuccess, loadRequestsSuccess } from './collection-requests.actions';
 
-export interface RequestState {
+export interface CollectionRequestState {
     requests: CollectionRequest[];
 }
 
-const loadRequestsFromStorage = (): CollectionRequest[] => {
-    const data = localStorage.getItem('collection_requests');
-    return data ? JSON.parse(data) : [];
+export const initialState: CollectionRequestState = {
+    requests: [],
 };
 
-export const initialState: RequestState = {
-    requests: loadRequestsFromStorage(),
-};
-
-export const requestReducer = createReducer(
+export const collectionRequestsReducer = createReducer(
     initialState,
-    on(loadRequests, (state) => ({
+    on(loadRequestsSuccess, (state, { requests }) => ({ ...state, requests })),
+    on(deleteRequestSuccess, (state, { requestId }) => ({
         ...state,
-        requests: loadRequestsFromStorage(), 
-    })),
-    // on(addRequest, (state, { request }) => {
-    //     const updatedRequests = [...state.requests, request];
-    //     localStorage.setItem('collectionRequests', JSON.stringify(updatedRequests)); // Persist to LocalStorage
-    //     return { ...state, requests: updatedRequests };
-    // })
+        requests: state.requests.filter(req => req.id !== requestId),
+    }))
 );

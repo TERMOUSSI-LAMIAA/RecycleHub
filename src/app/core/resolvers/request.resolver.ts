@@ -10,18 +10,11 @@ import { selectRequests } from "../../features/collection-requests/store/request
 @Injectable({
     providedIn: 'root'
 })
-export class RequestResolver implements Resolve<boolean> {
+export class RequestResolver implements Resolve<CollectionRequest[]> {  
     constructor(private store: Store) { }
 
-
-    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
+    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<CollectionRequest[]> {  // ✅ Change return type
         this.store.dispatch(loadRequests());
-
-        return this.store.select(selectRequests).pipe(
-            filter(requests => requests.length > 0), 
-            take(1), 
-            switchMap(() => of(true)), 
-            catchError(() => of(true)) 
-        );
+        return this.store.select(selectRequests).pipe(take(1));  // ✅ Return the observable with requests
     }
 }

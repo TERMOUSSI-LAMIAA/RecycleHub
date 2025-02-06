@@ -6,7 +6,7 @@ import { CollectionRequest } from '../../../../core/models/request.model';
 import { RequestFormComponent } from '../request-form/request-form.component';
 import { CommonModule } from '@angular/common';
 import { Observable } from 'rxjs';
-import { loadRequests } from '../../store/collection-requests.actions';
+import { deleteRequest, loadRequests } from '../../store/collection-requests.actions';
 import { Store } from '@ngrx/store';
 import { selectRequests } from '../../store/request.selectors';
 
@@ -23,11 +23,10 @@ export class RequestListComponent implements OnInit {
 
   constructor(
     private store: Store
-  ) { }
+  ) { this.requests$ = this.store.select(selectRequests); }
 
   ngOnInit() {
     this.store.dispatch(loadRequests());
-    this.requests$ = this.store.select(selectRequests); 
   }
 
 
@@ -47,17 +46,9 @@ export class RequestListComponent implements OnInit {
     // You can also pass the current request data to the form component if needed
   }
 
-  deleteRequest(requestId: String) {
-    // if (confirm('Are you sure you want to delete this request? This action cannot be undone.')) {
-    //   this.requestService.deleteUserRequest(requestId).subscribe({
-    //     next: () => {
-    //       console.log('Request deleted successfully');
-    //       this.loadRequests(); // Refresh the list after deletion
-    //     },
-    //     error: (error) => {
-    //       console.error('Error deleting request:', error);
-    //     }
-    //   });
-    // }
+  deleteRequest(requestId: string) {
+    if (confirm('Are you sure you want to delete this request?')) {
+      this.store.dispatch(deleteRequest({ requestId }));
+    }
   }
 }
