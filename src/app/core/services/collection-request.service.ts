@@ -46,9 +46,11 @@ export class CollectionRequestService {
             return throwError(() => new Error('Maximum 3 simultaneous requests allowed'));
         }
 
-        // Validate total weight
-        const totalWeight = request.wasteTypes.reduce((sum, type) => sum + this.getEstimatedWeight(type), 0);
-        if (totalWeight > 10000) { // 10kg limit
+        // // Validate total weight
+        // const totalWeight = request.wasteTypes.reduce((sum, type) => sum + this.getEstimatedWeight(type), 0);
+        if (request.estimatedWeight > 10000) { 
+            console.log("10KG max"); 
+
             return throwError(() => new Error('Total collection weight cannot exceed 10kg'));
         }
 

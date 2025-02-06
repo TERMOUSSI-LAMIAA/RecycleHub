@@ -40,7 +40,7 @@ export class RequestFormComponent {
   ) {
     this.requestForm = this.fb.group({
       wasteTypes: [[], Validators.required],
-      estimatedWeight: [null, [Validators.required, Validators.min(1000), numberValidator()]],
+      estimatedWeight: [null, [Validators.required, Validators.min(1000), numberValidator(), Validators.max(10000)]],
       collectAddress: ['', Validators.required],
       scheduledDate: [null, [Validators.required, futureDateValidator()]],
       scheduledTimeSlot: ['', Validators.required],

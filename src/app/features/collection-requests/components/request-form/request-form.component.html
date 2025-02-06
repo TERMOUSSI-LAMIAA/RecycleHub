@@ -33,6 +33,11 @@
             <p *ngIf="requestForm.get('estimatedWeight')?.errors?.['min']" class="text-red-500 text-sm mt-1">
                 Minimum weight is 1000g.
             </p>
+            <p *ngIf="requestForm.get('estimatedWeight')?.hasError('max') && (requestForm.get('estimatedWeight')?.touched || requestForm.get('estimatedWeight')?.dirty)"
+                class="text-red-500 text-sm mt-1">
+                Maximum weight is 10000g.
+            </p>
+
             <p *ngIf="requestForm.get('estimatedWeight')?.errors?.['required'] && requestForm.get('estimatedWeight')?.touched"
                 class="text-red-500 text-sm mt-1">Weight is required.</p>
             <p *ngIf="requestForm.get('estimatedWeight')?.errors?.['notANumber'] && requestForm.get('estimatedWeight')?.touched"
