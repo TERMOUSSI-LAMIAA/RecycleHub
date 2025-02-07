@@ -1,6 +1,6 @@
 import { createReducer, on } from '@ngrx/store';
 import { CollectionRequest } from '../../../core/models/request.model';
-import { clearRequestError, createRequest, createRequestFailure, createRequestSuccess, deleteRequestSuccess, loadFilteredRequestsByCityFailure, loadFilteredRequestsByCitySuccess, loadRequestsSuccess, updateRequestFailure, updateRequestSuccess } from './collection-requests.actions';
+import { clearRequestError, createRequest, createRequestFailure, createRequestSuccess, deleteRequestSuccess, loadFilteredRequestsByCityFailure, loadFilteredRequestsByCitySuccess, loadRequestsSuccess, updateRequestFailure, updateRequestStatus, updateRequestStatusFailure, updateRequestStatusSuccess, updateRequestSuccess } from './collection-requests.actions';
 
 export interface CollectionRequestState {
     requests: CollectionRequest[];
@@ -60,5 +60,25 @@ export const collectionRequestsReducer = createReducer(
         ...state,
         error: null
     }))
+    , on(updateRequestStatus, (state) => ({
+        ...state,
+        loading: true,  
+        error: null
+    })),
 
+    on(updateRequestStatusSuccess, (state, { requestId, newStatus }) => ({
+        ...state,
+        loading: false,
+        requests: state.requests.map(request =>
+            request.id === requestId
+                ? { ...request, status: newStatus }
+                : request
+        )
+    })),
+
+    on(updateRequestStatusFailure, (state, { error }) => ({
+        ...state,
+        loading: false,
+        error  
+    }))
 );

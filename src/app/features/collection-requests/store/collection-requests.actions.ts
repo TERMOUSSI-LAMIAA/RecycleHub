@@ -1,5 +1,5 @@
 import { createAction, props } from "@ngrx/store";
-import { CollectionRequest } from "../../../core/models/request.model";
+import { CollectionRequest, RequestStatus } from "../../../core/models/request.model";
 
 export const loadRequests = createAction('[Request List] Load Requests');
 export const loadRequestsSuccess = createAction('[Request List] Load Requests Success', props<{ requests: CollectionRequest[] }>());
@@ -49,6 +49,21 @@ export const updateRequestSuccess = createAction(
 
 export const updateRequestFailure = createAction(
     '[Collection Request] Update Request Failure',
+    props<{ error: string }>()
+);
+
+export const updateRequestStatus = createAction(
+    '[Collection Request] Update Request Status',
+    props<{ requestId: string; status: RequestStatus }>() 
+);
+
+export const updateRequestStatusSuccess = createAction(
+    '[Collection Request] Update Request Status Success',
+    props<{ requestId: string; newStatus: RequestStatus }>()
+);
+
+export const updateRequestStatusFailure = createAction(
+    '[Collection Request] Update Request Status Failure',
     props<{ error: string }>()
 );
 export const clearRequestError = createAction('[Collection Request] Clear Error');

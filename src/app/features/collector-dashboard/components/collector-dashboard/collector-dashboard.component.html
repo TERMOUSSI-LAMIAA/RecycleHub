@@ -1,8 +1,6 @@
-<!-- collector-dashboard.component.html -->
 <div class="dashboard-container">
     <h2>Collection Requests Dashboard</h2>
 
-  
     <table class="requests-table">
         <thead>
             <tr>
@@ -32,11 +30,11 @@
                     </span>
                 </td>
                 <td>
-                    <select [value]="request?.status" (change)="handleStatusChange($event, request!.id)">
-                        <option *ngFor="let status of statuses" [value]="status">
-                            {{ status }}
-                        </option>
+                    <select [formControl]="statusControls[request.id]"
+                        (change)="onStatusChange(request.id, $event)">
+                        <option *ngFor="let status of statuses" [value]="status">{{ status }}</option>
                     </select>
+                    <button (click)="updateStatus(request.id)">Update Status</button>
                 </td>
             </tr>
         </tbody>

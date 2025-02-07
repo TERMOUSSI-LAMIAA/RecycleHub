@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { Observable, throwError, of } from "rxjs";
+import { Observable, throwError, of, delay } from "rxjs";
 import { CollectionRequest, RequestStatus, WasteType } from "../models/request.model";
 import { AuthService } from "./auth.service";
 import { LocalStorageService } from "./local-storage.service";
@@ -129,8 +129,24 @@ export class CollectionRequestService {
             return requestCity === collectorCity;  
         });
     }
+    
+    updateStatus(requestId: string, status: RequestStatus): Observable<CollectionRequest> {
+        const allRequests = this.getAllRequests();
+        const requestIndex = allRequests.findIndex(req => req.id === requestId);
+
+        if (requestIndex === -1) {
+            return throwError(() => new Error('Request not found'));
+        }
+
+        const updatedRequest = { ...allRequests[requestIndex], status };
+        allRequests[requestIndex] = updatedRequest;
+        this.saveRequests(allRequests);
+
+        return of(updatedRequest);
+    }
+
     // Private helper methods
-    public getAllRequests(): CollectionRequest[] {
+    private getAllRequests(): CollectionRequest[] {
         const requestsStr = this.localStorageService.getItem(this.REQUESTS_KEY);
         return requestsStr ? JSON.parse(requestsStr) : [];
     }
