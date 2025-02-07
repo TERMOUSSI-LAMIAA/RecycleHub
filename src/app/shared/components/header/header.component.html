@@ -8,9 +8,11 @@
         <!-- Navigation -->
         <nav>
             <ul class="flex space-x-6">
-                <li>
-                    <a routerLink="/requests/list" class="hover:text-gray-300">Requests</a>
-                </li>
+            <li *ngIf="isLoggedIn$ | async">
+                <a [routerLink]="userType === 'individual' ? '/requests/list' : '/collector/dashboard'" class="hover:text-gray-300">
+                    {{ userType === 'individual' ? 'Requests' : 'Dashboard' }}
+                </a>
+            </li>
                 <li>
                     <a routerLink="/profile" class="hover:text-gray-300">Profile</a>
                 </li>

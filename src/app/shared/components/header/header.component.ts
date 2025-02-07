@@ -13,15 +13,20 @@ import { CommonModule } from '@angular/common';
 })
 export class HeaderComponent {
   isLoggedIn$!: Observable<boolean>;
+  userType: string = '';
 
   constructor(private authService: AuthService, private router: Router) { }
 
   ngOnInit(): void {
     this.isLoggedIn$ = this.authService.currentUser$.pipe(
-      map(user => !!user) // Convert user object to boolean
+      map(user => {
+        if (user) {
+          this.userType = user.userType;
+        }
+        return !!user;
+      })
     );
   }
-
   logout(): void {
     this.authService.logout();
     this.router.navigate(['/login']);
