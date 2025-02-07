@@ -114,8 +114,23 @@ export class CollectionRequestService {
         return of(undefined);
     }
 
+    filterRequestsByCity(): CollectionRequest[] {
+        const currentUser = this.authService.getCurrentUser(); 
+        if (!currentUser || currentUser.userType !== 'collector') {
+            return []; 
+        }
+
+        const allRequests = this.getAllRequests();  
+        const collectorCity = currentUser.city.toLowerCase(); 
+
+        return allRequests.filter((request) => {
+          
+            const requestCity = request.collectAddress.split(',')[0].trim().toLowerCase();
+            return requestCity === collectorCity;  
+        });
+    }
     // Private helper methods
-    private getAllRequests(): CollectionRequest[] {
+    public getAllRequests(): CollectionRequest[] {
         const requestsStr = this.localStorageService.getItem(this.REQUESTS_KEY);
         return requestsStr ? JSON.parse(requestsStr) : [];
     }

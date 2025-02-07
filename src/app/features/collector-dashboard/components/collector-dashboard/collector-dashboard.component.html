@@ -1,1 +1,44 @@
-<h1>Tableau de Bord Collecteur</h1>
+<!-- collector-dashboard.component.html -->
+<div class="dashboard-container">
+    <h2>Collection Requests Dashboard</h2>
+
+  
+    <table class="requests-table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Time Slot</th>
+                <th>Address</th>
+                <th>Waste Types</th>
+                <th>Weight (g)</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let request of requests$ | async">
+                <td>{{request.scheduledDate | date:'short'}}</td>
+                <td>{{request.scheduledTimeSlot}}</td>
+                <td>{{request.collectAddress}}</td>
+                <td>
+                    <span class="waste-badge" *ngFor="let type of request.wasteTypes">
+                        {{type}}
+                    </span>
+                </td>
+                <td>{{request.estimatedWeight}}</td>
+                <td>
+                    <span class="status-badge" [ngClass]="'status-' + request.status.toLowerCase()">
+                        {{request.status}}
+                    </span>
+                </td>
+                <td>
+                    <select [value]="request?.status" (change)="handleStatusChange($event, request!.id)">
+                        <option *ngFor="let status of statuses" [value]="status">
+                            {{ status }}
+                        </option>
+                    </select>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

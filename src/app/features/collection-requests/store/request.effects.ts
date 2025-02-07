@@ -5,6 +5,7 @@ import { of } from 'rxjs';
 import { catchError, map, mergeMap } from 'rxjs/operators';
 import * as RequestActions from './collection-requests.actions';
 import { CollectionRequestService } from '../../../core/services/collection-request.service';
+import {  loadFilteredRequestsByCity, loadFilteredRequestsByCityFailure, loadFilteredRequestsByCitySuccess } from './collection-requests.actions';
 
 
 @Injectable()
@@ -17,6 +18,21 @@ export class CollectionRequestsEffects {
                 this.requestService.getUserRequests().pipe(
                     map(requests => RequestActions.loadRequestsSuccess({ requests })),  // ✅ Use correct action
                     catchError(error => of(RequestActions.loadRequestsFailure({ error: error.message })))  // ✅ Ensure correct action
+                )
+            )
+        )
+    );
+    loadFilteredRequests$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(loadFilteredRequestsByCity), 
+            mergeMap(() =>
+                of(this.requestService.filterRequestsByCity()).pipe(
+                    map((filteredRequests) =>
+                        loadFilteredRequestsByCitySuccess({ requests: filteredRequests }) 
+                    ),
+                    catchError((error) =>
+                        of(loadFilteredRequestsByCityFailure({ error: error.message })) 
+                    )
                 )
             )
         )

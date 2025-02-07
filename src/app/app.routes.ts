@@ -28,6 +28,9 @@ export const routes: Routes = [
         canActivate: [authGuard],
         data: {
             allowedUserTypes: ['collector']
+        },
+        resolve: {
+            requests: RequestResolver
         }
     },
     {

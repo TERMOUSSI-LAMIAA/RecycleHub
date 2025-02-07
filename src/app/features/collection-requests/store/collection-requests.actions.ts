@@ -5,6 +5,19 @@ export const loadRequests = createAction('[Request List] Load Requests');
 export const loadRequestsSuccess = createAction('[Request List] Load Requests Success', props<{ requests: CollectionRequest[] }>());
 export const loadRequestsFailure = createAction('[Request List] Load Requests Failure', props<{ error: string }>());
 
+export const loadFilteredRequestsByCity = createAction(
+    '[Request] Load Filtered Requests By City'
+);
+
+export const loadFilteredRequestsByCitySuccess = createAction(
+    '[Request] Load Filtered Requests By City Success',
+    props<{ requests: CollectionRequest[] }>()
+);
+
+export const loadFilteredRequestsByCityFailure = createAction(
+    '[Request] Load Filtered Requests By City Failure',
+    props<{ error: string }>()
+);
 export const deleteRequest = createAction('[Request List] Delete Request', props<{ requestId: string }>());
 export const deleteRequestSuccess = createAction('[Request List] Delete Request Success', props<{ requestId: string }>());
 export const deleteRequestFailure = createAction('[Request List] Delete Request Failure', props<{ error: string }>());

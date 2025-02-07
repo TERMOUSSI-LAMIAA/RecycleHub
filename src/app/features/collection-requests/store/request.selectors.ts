@@ -12,3 +12,7 @@ export const selectRequestError = createSelector(
     selectRequestState,
     (state: CollectionRequestState) => state.error
 );
+export const selectCollectionRequestLoading = createSelector(
+    selectRequestState,
+    (state: CollectionRequestState) => state.loading // Assuming 'loading' is a property in your state
+);
