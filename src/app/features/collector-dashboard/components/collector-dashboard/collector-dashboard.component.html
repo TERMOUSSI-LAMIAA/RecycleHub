@@ -19,19 +19,22 @@
                 <td>{{request.scheduledTimeSlot}}</td>
                 <td>{{request.collectAddress}}</td>
                 <td>
-                    <span class="waste-badge" *ngFor="let type of request.wasteTypes">
-                        {{type}}
+                    <span class="waste-badge" *ngFor="let detail of request.wasteDetails">
+                        {{detail.wasteType}}
                     </span>
                 </td>
-                <td>{{request.estimatedWeight}}</td>
+                <td>
+                    <span *ngFor="let detail of request.wasteDetails">
+                        {{detail.estimatedWeight}}
+                    </span>
+                </td>
                 <td>
                     <span class="status-badge" [ngClass]="'status-' + request.status.toLowerCase()">
                         {{request.status}}
                     </span>
                 </td>
                 <td>
-                    <select [formControl]="statusControls[request.id]"
-                        (change)="onStatusChange(request.id, $event)">
+                    <select [formControl]="statusControls[request.id]" (change)="onStatusChange(request.id, $event)">
                         <option *ngFor="let status of statuses" [value]="status">{{ status }}</option>
                     </select>
                     <button (click)="updateStatus(request.id)">Update Status</button>

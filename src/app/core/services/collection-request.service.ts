@@ -3,6 +3,7 @@ import { Observable, throwError, of, delay } from "rxjs";
 import { CollectionRequest, RequestStatus, WasteType } from "../models/request.model";
 import { AuthService } from "./auth.service";
 import { LocalStorageService } from "./local-storage.service";
+import { PointsService } from "./points.service";
 
 @Injectable({
     providedIn: 'root'
@@ -12,7 +13,8 @@ export class CollectionRequestService {
 
     constructor(
         private authService: AuthService,
-        private localStorageService: LocalStorageService
+        private localStorageService: LocalStorageService,
+        private pointsService: PointsService
     ) { }
 
     // Get all requests for current user
@@ -29,7 +31,7 @@ export class CollectionRequestService {
     }
 
     // Create a new collection request
-    createRequest(request: Omit<CollectionRequest, 'id' | 'status'>): Observable<CollectionRequest> {
+    createRequest(request: Omit<CollectionRequest, 'id' | 'status' | 'userId'>): Observable<CollectionRequest> {
         const currentUser = this.authService.getCurrentUser();
         if (!currentUser) {
             return throwError(() => new Error('User not authenticated'));
@@ -42,28 +44,36 @@ export class CollectionRequestService {
         );
 
         if (userRequests.length >= 3) {
-            console.log("Too many pending requests!"); 
+            console.log("Too many pending requests!");
             return throwError(() => new Error('Maximum 3 simultaneous requests allowed'));
         }
 
-        // // Validate total weight
-        // const totalWeight = request.wasteTypes.reduce((sum, type) => sum + this.getEstimatedWeight(type), 0);
-        if (request.estimatedWeight > 10000) { 
-            console.log("10KG max"); 
+        // Validate total weight
+        let totalWeight = 0;
+        if (request.wasteDetails && request.wasteDetails.length > 0) {
+            totalWeight = request.wasteDetails.reduce((sum, detail) => sum + detail.estimatedWeight, 0);
+        }
 
+        if (totalWeight > 10000) {
+            console.log("10KG max");
             return throwError(() => new Error('Total collection weight cannot exceed 10kg'));
         }
 
         // Validate minimum weight
-        if (request.estimatedWeight < 1000) {
+        if (totalWeight < 1000) {
             return throwError(() => new Error('Minimum collection weight is 1000g'));
         }
 
         const newRequest: CollectionRequest = {
-            ...request,
             id: Date.now().toString(),
             userId: currentUser.id,
             status: RequestStatus.PENDING,
+            wasteDetails: request.wasteDetails,
+            collectAddress: request.collectAddress,
+            scheduledDate: request.scheduledDate,
+            scheduledTimeSlot: request.scheduledTimeSlot,
+            additionalNotes: request.additionalNotes,
+            photos: request.photos
         };
 
         const allRequests = this.getAllRequests();
@@ -87,7 +97,7 @@ export class CollectionRequestService {
             return throwError(() => new Error('Only pending requests can be modified'));
         }
 
-        const updatedRequest = { ...allRequests[requestIndex], ...updates };
+        const updatedRequest: CollectionRequest = { ...allRequests[requestIndex], ...updates };
         allRequests[requestIndex] = updatedRequest;
         this.saveRequests(allRequests);
 
@@ -115,21 +125,20 @@ export class CollectionRequestService {
     }
 
     filterRequestsByCity(): CollectionRequest[] {
-        const currentUser = this.authService.getCurrentUser(); 
+        const currentUser = this.authService.getCurrentUser();
         if (!currentUser || currentUser.userType !== 'collector') {
-            return []; 
+            return [];
         }
 
-        const allRequests = this.getAllRequests();  
-        const collectorCity = currentUser.city.toLowerCase(); 
+        const allRequests = this.getAllRequests();
+        const collectorCity = currentUser.city.toLowerCase();
 
         return allRequests.filter((request) => {
-          
             const requestCity = request.collectAddress.split(',')[0].trim().toLowerCase();
-            return requestCity === collectorCity;  
+            return requestCity === collectorCity;
         });
     }
-    
+
     updateStatus(requestId: string, status: RequestStatus): Observable<CollectionRequest> {
         const allRequests = this.getAllRequests();
         const requestIndex = allRequests.findIndex(req => req.id === requestId);
@@ -141,6 +150,14 @@ export class CollectionRequestService {
         const updatedRequest = { ...allRequests[requestIndex], status };
         allRequests[requestIndex] = updatedRequest;
         this.saveRequests(allRequests);
+
+        // If request is validated, reward points
+        if (status === RequestStatus.VALIDATED) {
+            const request = allRequests[requestIndex];
+            request.wasteDetails.forEach(detail => {
+                this.pointsService.addPoints(request.userId, detail.wasteType, detail.estimatedWeight).subscribe();
+            });
+        }
 
         return of(updatedRequest);
     }
@@ -155,15 +172,4 @@ export class CollectionRequestService {
         this.localStorageService.setItem(this.REQUESTS_KEY, JSON.stringify(requests));
     }
 
-    // Helper to get estimated weight for waste type
-    private getEstimatedWeight(type: WasteType): number {
-        // This could be expanded or moved to a configuration
-        switch (type) {
-            case WasteType.PLASTIC: return 2000; // 2kg
-            case WasteType.METAL: return 5000;   // 5kg
-            case WasteType.PAPER: return 1000;   // 1kg
-            case WasteType.GLASS: return 1000;   // 1kg
-            default: return 0;
-        }
-    }
 }

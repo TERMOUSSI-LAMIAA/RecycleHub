@@ -1,49 +1,46 @@
 <div class="p-6 bg-white shadow-md rounded-lg">
     <div class="flex justify-between items-center mb-4">
         <h2 class="text-xl font-bold">New Collection Request</h2>
-        <button (click)="onCancel()" class="text-gray-500 hover:text-gray-700">
-            ✕
-        </button>
+        <button (click)="onCancel()" class="text-gray-500 hover:text-gray-700">✕</button>
     </div>
 
-    <!-- Display Error Message -->
     <div *ngIf="errorMessage" class="bg-red-100 text-red-700 p-3 rounded-md text-sm mb-3">
         {{ errorMessage }}
     </div>
 
-
     <form [formGroup]="requestForm" (ngSubmit)="onSubmit()" class="space-y-6">
+        <!-- Waste Types with Weights -->
         <div>
             <label class="block mb-2 font-medium">Types of Waste<span class="text-red-500">*</span></label>
-            <div class="flex flex-wrap gap-3">
-                <label *ngFor="let type of wasteTypes" class="inline-flex items-center">
-                   
-                    <input type="checkbox" [value]="type" (change)="onWasteTypeChange($event)" class="form-checkbox"
-                        [checked]="isChecked(type)" 
-                    >
-                    <span class="ml-2">{{ type }}</span>
-                </label>
+            <div class="space-y-4">
+                <div *ngFor="let type of wasteTypes" class="flex items-center gap-4">
+                    <label class="inline-flex items-center">
+                <input type="checkbox" [value]="type" (change)="onWasteTypeChange($event)" class="form-checkbox"
+                    [checked]="isChecked(type)">
+                        <span class="ml-2">{{ type }}</span>
+                    </label>
+
+                    <div *ngIf="isWasteTypeSelected(type)" class="flex-1">
+                        <input type="number" [formControlName]="getWeightControlName(type)"
+                            placeholder="Weight in grams" min="1000" max="10000"
+                            class="w-full p-2 border rounded focus:outline-none focus:ring focus:ring-blue-300">
+                        <div *ngIf="getWeightControl(type)?.touched" class="mt-1">
+                            <p *ngIf="getWeightControl(type)?.errors?.['min']" class="text-red-500 text-sm">
+                                Minimum weight is 1000g.
+                            </p>
+                            <p *ngIf="getWeightControl(type)?.errors?.['max']" class="text-red-500 text-sm">
+                                Maximum weight is 10000g.
+                            </p>
+                            <p *ngIf="getWeightControl(type)?.errors?.['required']" class="text-red-500 text-sm">
+                                Weight is required for selected waste type.
+                            </p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div>
-            <label class="block mb-2 font-medium">Estimated Weight (g)<span class="text-red-500">*</span></label>
-            <input type="number" formControlName="estimatedWeight" min="1000" placeholder="Enter weight in grams"
-                class="w-full p-2 border rounded focus:outline-none focus:ring focus:ring-blue-300">
-            <p *ngIf="requestForm.get('estimatedWeight')?.errors?.['min']" class="text-red-500 text-sm mt-1">
-                Minimum weight is 1000g.
-            </p>
-            <p *ngIf="requestForm.get('estimatedWeight')?.hasError('max') && (requestForm.get('estimatedWeight')?.touched || requestForm.get('estimatedWeight')?.dirty)"
-                class="text-red-500 text-sm mt-1">
-                Maximum weight is 10000g.
-            </p>
-
-            <p *ngIf="requestForm.get('estimatedWeight')?.errors?.['required'] && requestForm.get('estimatedWeight')?.touched"
-                class="text-red-500 text-sm mt-1">Weight is required.</p>
-            <p *ngIf="requestForm.get('estimatedWeight')?.errors?.['notANumber'] && requestForm.get('estimatedWeight')?.touched"
-                class="text-red-500 text-sm mt-1">Please enter a valid number.</p>
-        </div>
-
+        <!-- Rest of the form -->
         <div>
             <label class="block mb-2 font-medium">Collection Address<span class="text-red-500">*</span></label>
             <input type="text" formControlName="collectAddress" placeholder="Enter collection address"
@@ -56,8 +53,6 @@
             <label class="block mb-2 font-medium">Collection Date<span class="text-red-500">*</span></label>
             <input type="date" formControlName="scheduledDate"
                 class="w-full p-2 border rounded focus:outline-none focus:ring focus:ring-blue-300">
-
-            <!-- Error message for invalid date -->
             <p *ngIf="requestForm.get('scheduledDate')?.errors?.['futureDate'] && requestForm.get('scheduledDate')?.touched"
                 class="text-red-500 text-sm mt-1">The collection date must be in the future.</p>
         </div>
@@ -85,11 +80,14 @@
                 class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
         </div>
 
-        <!-- Buttons -->
         <div class="flex justify-end gap-3 mt-6">
-            <button type="button" (click)="onCancel()" class="px-4 py-2 border rounded hover:bg-gray-50">Cancel</button>
-            <button type="submit" [disabled]="requestForm.invalid"
-                class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50">Submit</button>
+            <button type="button" (click)="onCancel()" class="px-4 py-2 border rounded hover:bg-gray-50">
+                Cancel
+            </button>
+            <button type="submit" [disabled]="!requestForm.valid || !hasSelectedWasteTypes()"
+                class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50">
+                Submit
+            </button>
         </div>
     </form>
 </div>

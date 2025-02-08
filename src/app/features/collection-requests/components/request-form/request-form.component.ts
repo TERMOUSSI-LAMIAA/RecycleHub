@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output, SimpleChanges } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
-import { CollectionRequest, WasteType } from '../../../../core/models/request.model';
+import { CollectionRequest, WasteDetail, WasteType } from '../../../../core/models/request.model';
 import { CollectionRequestService } from '../../../../core/services/collection-request.service';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -23,7 +23,7 @@ export class RequestFormComponent {
   @Input() requestToEdit: CollectionRequest | null = null;
   requestForm: FormGroup;
   wasteTypes = Object.values(WasteType);
-  selectedWasteTypes: WasteType[] = [];
+  selectedWasteTypes: Set<WasteType> = new Set();
   timeSlots = [
     '09:00-10:00', '10:00-11:00', '11:00-12:00',
     '13:00-14:00', '14:00-15:00', '15:00-16:00',
@@ -39,26 +39,56 @@ export class RequestFormComponent {
     private requestService: CollectionRequestService
   ) {
     this.requestForm = this.fb.group({
-      wasteTypes: [[], Validators.required],
-      estimatedWeight: [null, [Validators.required, Validators.min(1000), numberValidator(), Validators.max(10000)]],
       collectAddress: ['', Validators.required],
       scheduledDate: [null, [Validators.required, futureDateValidator()]],
       scheduledTimeSlot: ['', Validators.required],
       additionalNotes: ['']
     });
+    // Initialize weight controls for each waste type
+    this.wasteTypes.forEach(type => {
+      this.requestForm.addControl(
+        this.getWeightControlName(type),
+        this.fb.control({ value: '', disabled: true }, [
+          Validators.required,
+          Validators.min(1000),
+          numberValidator(),
+          Validators.max(10000)
+        ])
+      );
+    });
     this.error$ = this.store.select(selectRequestError);
   }
+
+  getWeightControlName(type: WasteType): string {
+    return `weight_${type}`;
+  }
+
+  getWeightControl(type: WasteType) {
+    return this.requestForm.get(this.getWeightControlName(type));
+  }
+
   
   patchFormValues() {
+    this.wasteTypes.forEach(type => {
+      this.getWeightControl(type)?.disable();
+    });
+
+    // Basic form values
     this.requestForm.patchValue({
-      wasteTypes: this.requestToEdit!.wasteTypes,
-      estimatedWeight: this.requestToEdit!.estimatedWeight,
       collectAddress: this.requestToEdit!.collectAddress,
       scheduledDate: this.requestToEdit!.scheduledDate,
       scheduledTimeSlot: this.requestToEdit!.scheduledTimeSlot,
       additionalNotes: this.requestToEdit!.additionalNotes
     });
-    this.selectedWasteTypes = [...this.requestToEdit!.wasteTypes];
+    // Handle waste details
+    this.requestToEdit!.wasteDetails.forEach(detail => {
+      this.selectedWasteTypes.add(detail.wasteType);
+      const control = this.getWeightControl(detail.wasteType);
+      if (control) {
+        control.enable();
+        control.setValue(detail.estimatedWeight);
+      }
+    });
     this.selectedPhotos = this.requestToEdit!.photos || [];
   }
   ngOnChanges(changes: SimpleChanges) {
@@ -70,39 +100,46 @@ export class RequestFormComponent {
       }
     }
   }
+
   resetForm() {
     this.requestForm.reset(); // Reset all form control values to null
-    this.selectedWasteTypes = []; // Clear selected waste types
+    this.selectedWasteTypes.clear();
     this.selectedPhotos = []; // Clear selected photos
-    this.requestForm.get('wasteTypes')?.setValue([]); // Ensure wasteTypes is an empty array
-    this.store.dispatch(CollectionRequestActions.clearRequestError());
+
+    this.wasteTypes.forEach(type => {
+      const control = this.getWeightControl(type);
+      if (control) {
+        control.disable();
+        control.setValue('');
+      }
+    });    this.store.dispatch(CollectionRequestActions.clearRequestError());
   }
+
   ngOnInit() {
     this.error$.subscribe((error) => {
       this.errorMessage = error;
     });
   }
   
-
-
   onWasteTypeChange(event: any) {
-    const type = event.target.value;
+    const type = event.target.value as WasteType;
     const isChecked = event.target.checked;
+    const control = this.getWeightControl(type);
 
     if (isChecked) {
-      // Add the type only if it's not already in the array
-      if (!this.selectedWasteTypes.includes(type)) {
-        this.selectedWasteTypes = [...this.selectedWasteTypes, type];
-      }
+      this.selectedWasteTypes.add(type);
+      control?.enable();
     } else {
-      // Remove the type if it's unchecked
-      this.selectedWasteTypes = this.selectedWasteTypes.filter(t => t !== type);
+      this.selectedWasteTypes.delete(type);
+      if (control) {
+        control.disable();
+        control.setValue('');
+      }
     }
-    this.requestForm.get('wasteTypes')?.setValue(this.selectedWasteTypes);
   }
 
   isChecked(type: WasteType): boolean {
-    return this.selectedWasteTypes.includes(type);
+    return this.selectedWasteTypes.has(type);
   }
 
 
@@ -117,50 +154,62 @@ export class RequestFormComponent {
       reader.readAsDataURL(files[i]);
     }
   }
-  
-  onSubmit() {
-  if (this.requestForm.valid) {
-    const formValue = this.requestForm.value;
-    // this.store.dispatch(CollectionRequestActions.clearRequestError());
-    // this.errorMessage = null;
 
-    if (this.requestToEdit) {
-      this.store.dispatch(CollectionRequestActions.updateRequest({ 
-        requestId: this.requestToEdit.id, 
-        updatedData: { ...formValue, photos: this.selectedPhotos } 
-      }));
-
-      this.store.select(selectRequestError).pipe(take(1)).subscribe(error => {
-        if (error) {
-          this.formSubmitted.emit(false);
-          this.errorMessage = error;
-          // setTimeout(() => { this.errorMessage = null; }, 3000);
-   
-        } else {
-          this.formSubmitted.emit(true);
-          alert("Request updated successfully! ✅");
-          // this.store.dispatch(CollectionRequestActions.clearRequestError());
-        }
-      });
-
-    } else {
-      this.store.dispatch(CollectionRequestActions.createRequest({ 
-        requestData: { ...formValue, photos: this.selectedPhotos } 
-      }));
-
-      this.store.select(selectRequestError).pipe(take(1)).subscribe(error => {
-        if (!error) {
-          this.formSubmitted.emit(true);
-          alert("Request created successfully! ✅");
-          // this.store.dispatch(CollectionRequestActions.clearRequestError());
-        }
-      });
-    }
-  } else {
-    this.formSubmitted.emit(false);
+  hasSelectedWasteTypes(): boolean {
+    return this.selectedWasteTypes.size > 0;
   }
-}
 
+  isWasteTypeSelected(type: WasteType): boolean {
+    return this.selectedWasteTypes.has(type);
+  }
+
+  onSubmit() {
+    if (this.requestForm.valid) {
+      const formValue = this.requestForm.value;
+
+      // Create wasteDetails array from selected types and their weights
+      const wasteDetails: WasteDetail[] = Array.from(this.selectedWasteTypes).map(type => ({
+        wasteType: type,
+        estimatedWeight: Number(this.getWeightControl(type)?.value)
+      }));
+
+      const requestData = {
+        ...formValue,
+        wasteDetails,
+        photos: this.selectedPhotos
+      };
+
+      if (this.requestToEdit) {
+        this.store.dispatch(CollectionRequestActions.updateRequest({
+          requestId: this.requestToEdit.id,
+          updatedData: requestData
+        }));
+
+        this.store.select(selectRequestError).pipe(take(1)).subscribe(error => {
+          if (error) {
+            this.formSubmitted.emit(false);
+            this.errorMessage = error;
+          } else {
+            this.formSubmitted.emit(true);
+            alert("Request updated successfully! ✅");
+          }
+        });
+      } else {
+        this.store.dispatch(CollectionRequestActions.createRequest({
+          requestData
+        }));
+
+        this.store.select(selectRequestError).pipe(take(1)).subscribe(error => {
+          if (!error) {
+            this.formSubmitted.emit(true);
+            alert("Request created successfully! ✅");
+          }
+        });
+      }
+    } else {
+      this.formSubmitted.emit(false);
+    }
+  }
   
   onCancel() {
     this.formCancelled.emit();

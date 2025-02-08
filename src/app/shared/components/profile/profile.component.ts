@@ -5,11 +5,12 @@ import { AuthService } from '../../../core/services/auth.service';
 import { Router } from '@angular/router';
 import { catchError, of } from 'rxjs';
 import { CommonModule } from '@angular/common';
+import { PointsDashboardComponent } from '../../../features/points-system/components/points-dashboard/points-dashboard.component';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [ReactiveFormsModule,CommonModule],
+  imports: [ReactiveFormsModule, CommonModule, PointsDashboardComponent],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss'
 })

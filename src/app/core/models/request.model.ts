@@ -13,11 +13,17 @@ export enum RequestStatus {
     REJECTED = 'rejected'
 }
 
+export interface WasteDetail {
+    wasteType: WasteType;
+    estimatedWeight: number; 
+}
+
 export interface CollectionRequest {
     id: string;
     userId: string;
-    wasteTypes: WasteType[];
-    estimatedWeight: number;
+    // wasteTypes: WasteType[];
+    wasteDetails: WasteDetail[];
+    // estimatedWeight: number;
     collectAddress: string;
     scheduledDate: Date;
     scheduledTimeSlot: string; 
