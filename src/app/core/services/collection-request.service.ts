@@ -45,7 +45,7 @@ export class CollectionRequestService {
 
         if (userRequests.length >= 3) {
             console.log("Too many pending requests!");
-            return throwError(() => new Error('Maximum 3 simultaneous requests allowed'));
+            return throwError(() => new Error('Maximum 3 pending requests allowed'));
         }
 
         // Validate total weight
@@ -97,11 +97,31 @@ export class CollectionRequestService {
             return throwError(() => new Error('Only pending requests can be modified'));
         }
 
+        // Merge updates
         const updatedRequest: CollectionRequest = { ...allRequests[requestIndex], ...updates };
+
+        // Validate total weight
+        let totalWeight = 0;
+        if (updatedRequest.wasteDetails && updatedRequest.wasteDetails.length > 0) {
+            totalWeight = updatedRequest.wasteDetails.reduce((sum, detail) => sum + detail.estimatedWeight, 0);
+        }
+
+        if (totalWeight > 10000) {
+            console.log("10KG max");
+            return throwError(() => new Error('Total collection weight cannot exceed 10kg'));
+        }
+
+        // Validate minimum weight
+        if (totalWeight < 1000) {
+            return throwError(() => new Error('Minimum collection weight is 1000g'));
+        }
+
+        // Save the updated request
         allRequests[requestIndex] = updatedRequest;
         this.saveRequests(allRequests);
 
         return of(updatedRequest);
+     
     }
 
     // Delete a request

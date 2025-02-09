@@ -1,0 +1,16 @@
+<div class="container">
+
+    <button (click)="convertPoints()">Convert Points to Voucher</button>
+
+    <div *ngIf="errorMessage" class="error-message">
+        {{ errorMessage }}
+    </div>
+
+    <div *ngIf="voucherAmount !== null">
+        <p>Voucher Amount: {{ voucherAmount }} DH</p>
+    </div>
+
+    <div *ngIf="remainingPoints !== null">
+        <p>Remaining Points: {{ remainingPoints }}</p>
+    </div>
+</div>

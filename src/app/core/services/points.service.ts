@@ -61,4 +61,36 @@ export class PointsService {
     private savePoints(points: Points[]): void {
         this.localStorageService.setItem(this.POINTS_KEY, JSON.stringify(points));
     }
+    
+    // Convert points to shopping vouchers
+    convertPointsToVoucher(userId: string): Observable<{ voucher: number; remainingPoints: number }> {
+        let allPoints = this.getAllPoints();
+        let userPoints = allPoints.find(p => p.userId === userId);
+
+        if (!userPoints || userPoints.totalPoints < 100) {
+            return of({ voucher: 0, remainingPoints: userPoints ? userPoints.totalPoints : 0 });
+        }
+
+        // Conversion logic
+        let voucher = 0;
+        let pointsUsed = 0;
+
+        if (userPoints.totalPoints >= 500) {
+            voucher = 350;
+            pointsUsed = 500;
+        } else if (userPoints.totalPoints >= 200) {
+            voucher = 120;
+            pointsUsed = 200;
+        } else if (userPoints.totalPoints >= 100) {
+            voucher = 50;
+            pointsUsed = 100;
+        }
+
+        // Deduct used points
+        userPoints.totalPoints -= pointsUsed;
+        this.savePoints(allPoints);
+
+        return of({ voucher, remainingPoints: userPoints.totalPoints });
+    }
+
 }

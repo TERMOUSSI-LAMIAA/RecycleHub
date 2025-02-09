@@ -13,8 +13,8 @@ import { selectRequests } from "../../features/collection-requests/store/request
 export class RequestResolver implements Resolve<CollectionRequest[]> {  
     constructor(private store: Store) { }
 
-    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<CollectionRequest[]> {  // ✅ Change return type
+    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<CollectionRequest[]> { 
         this.store.dispatch(loadRequests());
-        return this.store.select(selectRequests).pipe(take(1));  // ✅ Return the observable with requests
+        return this.store.select(selectRequests).pipe(take(1));  
     }
 }
