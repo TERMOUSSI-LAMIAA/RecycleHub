@@ -15,6 +15,7 @@ import { CommonModule } from '@angular/common';
 export class RegisterComponent {
   registerForm: FormGroup;
   errorMessage: string | null = null;
+  imageUrl: string | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -34,6 +35,24 @@ export class RegisterComponent {
     });
   }
 
+  onFileSelected(event: any): void {
+    const file: File = event.target.files[0];
+    if (file) {
+      this.readFile(file);
+    }
+  }
+
+  readFile(file: File): void {
+    const reader = new FileReader();
+
+    reader.onload = (e: any) => {
+      this.imageUrl = e.target.result; // Set the preview URL
+      this.registerForm.patchValue({ profileImage: this.imageUrl }); // Store in form
+    };
+
+    reader.readAsDataURL(file); // Read as Data URL (base64)
+  }
+  
   onSubmit(): void {
     if (this.registerForm.valid) {
       this.authService.register(this.registerForm.value).pipe(
