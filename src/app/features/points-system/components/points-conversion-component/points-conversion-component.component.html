@@ -1,16 +1,19 @@
-<div class="container">
+<div class="container mx-auto p-6 max-w-md bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl shadow-lg">
+    <button (click)="convertPoints()"
+        class="w-full bg-purple-600 text-white py-3 rounded-lg hover:bg-purple-700 transition-colors mb-4">
+        Convert Points to Voucher
+    </button>
 
-    <button (click)="convertPoints()">Convert Points to Voucher</button>
-
-    <div *ngIf="errorMessage" class="error-message">
+    <div *ngIf="errorMessage" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
         {{ errorMessage }}
     </div>
 
-    <div *ngIf="voucherAmount !== null">
+    <div *ngIf="voucherAmount !== null"
+        class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
         <p>Voucher Amount: {{ voucherAmount }} DH</p>
     </div>
 
-    <div *ngIf="remainingPoints !== null">
+    <div *ngIf="remainingPoints !== null" class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded">
         <p>Remaining Points: {{ remainingPoints }}</p>
     </div>
 </div>
