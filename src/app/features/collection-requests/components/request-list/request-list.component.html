@@ -1,6 +1,6 @@
 <div class="container mx-auto p-6 bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
     <div class="flex justify-between items-center mb-8 animate-slideIn">
-        <h1 class="text-3xl font-bold text-gray-800">Mes Demandes de Collecte</h1>
+        <h1 class="text-3xl font-bold text-gray-800">My Collection Requests</h1>
         <button (click)="openNewRequestForm()"
             class="bg-emerald-600 text-white px-6 py-3 rounded-lg hover:bg-emerald-700 transform hover:scale-105 transition-all duration-300 shadow-lg">
             New Request
@@ -8,15 +8,20 @@
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <ng-container *ngIf="(requests$ | async) as requests; else loading">
+        <ng-container *ngIf="(requests$ | async) as requests">
             <div *ngFor="let request of requests"
                 class="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 animate-fadeScale border border-gray-100">
                 <div class="flex justify-between items-start mb-4">
-                    <div class="font-bold text-lg text-gray-800">Demande #{{ request.id }}</div>
-                    <span [ngClass]="'status-' + request.status.toLowerCase()"
-                        class="inline-block py-1 px-3 rounded-full text-white text-sm">
-                        {{ request.status }}
-                    </span>
+                    <div class="font-bold text-lg text-gray-800">Request #{{ request.id }}</div>
+                <span class="inline-block py-1 px-3 rounded-full text-white text-sm" [ngClass]="{
+                    'bg-yellow-500': request.status.toLowerCase() === 'pending',
+                    'bg-gray-500': request.status.toLowerCase() === 'occupied',
+                    'bg-blue-500': request.status.toLowerCase() === 'in_progress',
+                     'bg-red-500': request.status.toLowerCase() === 'rejected', 
+                    'bg-green-500': request.status.toLowerCase() === 'validated' 
+                    }">
+                    {{ request.status }}
+                </span>
                 </div>
 
                 <div class="space-y-3 text-gray-600">
@@ -25,11 +30,11 @@
                         {{ request.scheduledDate | date }}
                     </p>
                     <p class="flex items-center">
-                        <span class="w-32 font-medium">Créneau:</span>
+                        <span class="w-32 font-medium">Time Slot:</span>
                         {{ request.scheduledTimeSlot }}
                     </p>
                     <p class="flex items-center">
-                        <span class="w-32 font-medium">Adresse:</span>
+                        <span class="w-32 font-medium">Address:</span>
                         {{ request.collectAddress }}
                     </p>
                     <p class="flex items-center">
@@ -59,14 +64,11 @@
                         Delete
                     </button>
                 </div>
+               
             </div>
         </ng-container>
 
-        <ng-template #loading>
-            <div class="col-span-full flex justify-center items-center py-12">
-                <div class="loading-shimmer w-full h-32 rounded-xl"></div>
-            </div>
-        </ng-template>
+      
     </div>
 
     <!-- Modal Overlay -->

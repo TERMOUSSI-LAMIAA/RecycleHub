@@ -47,18 +47,5 @@ export class CollectorDashboardComponent implements OnInit {
     const status = this.selectedStatuses[requestId];  // Get selected status when button is clicked
     this.store.dispatch(updateRequestStatus({ requestId: requestId, status: status }));
   }
-  // requests$: Observable<CollectionRequest[]> | undefined;
-  // statuses = Object.values(RequestStatus); 
 
-  // constructor(private store: Store) {
-  //   this.requests$ = this.store.select(selectRequests);
-  // }
-
-  // ngOnInit() {
-  //   this.store.dispatch(loadFilteredRequestsByCity());
-  // }
-
-  // updateStatus(requestId: string, status: RequestStatus) {
-  //   this.store.dispatch(updateRequestStatus({ requestId: requestId, status: status }));
-  // }
 }

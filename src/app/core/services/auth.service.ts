@@ -13,7 +13,7 @@ export class AuthService {
   // Add a BehaviorSubject to track authentication state
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
-  
+
   constructor(private localStorageService: LocalStorageService) {
     this.initializeCollectors();
     this.loadCurrentUser();
@@ -66,7 +66,7 @@ export class AuthService {
       this.CURRENT_USER_KEY,
       JSON.stringify(newUser)
     );
-    this.currentUserSubject.next(newUser); 
+    this.currentUserSubject.next(newUser);
     return of(newUser).pipe(delay(1000));
   }
 
@@ -127,7 +127,7 @@ export class AuthService {
 
     return throwError(() => new Error('User not found'));
   }
-  
+
   deleteAccount(): Observable<void> {
     const users = this.getUsers();
     const currentUser = this.getCurrentUser();

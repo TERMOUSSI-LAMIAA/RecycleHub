@@ -1,51 +1,75 @@
 <div
     class="dashboard-container bg-gradient-to-br from-green-900 via-emerald-800 to-green-900 p-8 min-h-screen flex flex-col items-center">
-    <h2 class="text-3xl font-bold text-white mb-6 animate-fadeIn">Collection Requests </h2>
+    <h2 class="text-3xl font-bold text-white mb-6 animate-fadeIn">Collection Requests</h2>
 
-    <table class="requests-table w-full bg-white/10 backdrop-blur-lg border-collapse rounded-lg shadow-lg">
-        <thead>
-            <tr class="text-left text-sm text-emerald-200 bg-emerald-800">
-                <th class="px-4 py-2">Date</th>
-                <th class="px-4 py-2">Time Slot</th>
-                <th class="px-4 py-2">Address</th>
-                <th class="px-4 py-2">Waste Types</th>
-                <th class="px-4 py-2">Weight (g)</th>
-                <th class="px-4 py-2">Status</th>
-                <th class="px-4 py-2">Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr *ngFor="let request of requests$ | async"
-                class="text-white border-b border-emerald-500 hover:bg-emerald-600 transition duration-300">
-                <td class="px-4 py-3">{{request.scheduledDate | date:'short'}}</td>
-                <td class="px-4 py-3">{{request.scheduledTimeSlot}}</td>
-                <td class="px-4 py-3">{{request.collectAddress}}</td>
-                <td class="px-4 py-3">
-                    <span class="waste-badge inline-block py-1 px-3 bg-emerald-500 rounded-full text-white mb-1 mr-2"
-                        *ngFor="let detail of request.wasteDetails">
-                        {{detail.wasteType}}
-                    </span>
-                </td>
-                <td class="px-4 py-3">
-                    <span *ngFor="let detail of request.wasteDetails" class="block">
-                        {{detail.estimatedWeight}}
-                    </span>
-                </td>
-                <td class="px-4 py-3">
-                    <span class="status-badge inline-block py-1 px-3 rounded-full text-white"
-                        [ngClass]="'status-' + request.status.toLowerCase()">
-                        {{request.status}}
-                    </span>
-                </td>
-                <td class="px-4 py-3">
-                    <select [formControl]="statusControls[request.id]" (change)="onStatusChange(request.id, $event)"
-                        class="bg-emerald-700 text-white py-2 px-4 rounded-lg shadow-md hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-400 transition">
-                        <option value="Pending">Pending</option>
-                        <option value="Completed">Completed</option>
-                        <option value="In Progress">In Progress</option>
-                    </select>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+    <div class="w-full bg-white/10 backdrop-blur-lg rounded-lg shadow-lg overflow-hidden">
+        <table class="requests-table w-full border-collapse">
+            <thead class="bg-emerald-800 text-emerald-200 text-left">
+                <tr>
+                    <th scope="col" class="px-4 py-3 text-sm font-semibold">Date</th>
+                    <th scope="col" class="px-4 py-3 text-sm font-semibold">Time Slot</th>
+                    <th scope="col" class="px-4 py-3 text-sm font-semibold">User ID</th>
+                    <th scope="col" class="px-4 py-3 text-sm font-semibold">Address</th>
+                    <th scope="col" class="px-4 py-3 text-sm font-semibold">Waste Types</th>
+                    <th scope="col" class="px-4 py-3 text-sm font-semibold">Notes</th>
+                    <th scope="col" class="px-4 py-3 text-sm font-semibold">Photos</th>
+                    <th scope="col" class="px-4 py-3 text-sm font-semibold">Status</th>
+                    <th scope="col" class="px-4 py-3 text-sm font-semibold">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-emerald-500">
+                <tr *ngFor="let request of requests$ | async"
+                    class="text-white hover:bg-emerald-600 transition duration-300">
+                    <td class="px-4 py-3 text-sm">{{ request.scheduledDate | date }}</td>
+                    <td class="px-4 py-3 text-sm">{{ request.scheduledTimeSlot }}</td>
+                    <td class="px-4 py-3 text-sm">{{ request.userId }}</td>
+                    <td class="px-4 py-3 text-sm">{{ request.collectAddress }}</td>
+                    <td class="px-4 py-3 text-sm">
+                        <div class="flex flex-wrap gap-1">
+                            <span *ngFor="let detail of request.wasteDetails"
+                                class="inline-block py-1 px-2 bg-emerald-500/20 text-emerald-200 rounded-full text-xs">
+                                {{ detail.wasteType }} ({{ detail.estimatedWeight }}g)
+                            </span>
+                        </div>
+                    </td>
+                    <td class="px-4 py-3 text-sm">{{ request.additionalNotes ? request.additionalNotes : 'No Notes' }}
+                    </td>
+                    <td class="px-4 py-3 text-sm">
+                        <div class="flex flex-wrap gap-2" *ngIf="request.photos && request.photos.length > 0">
+                            <img *ngFor="let photo of request.photos" [src]="photo" alt="Collection Photo"
+                                class="w-16 h-16 object-cover border rounded" />
+                        </div>
+                        <span *ngIf="!(request.photos && request.photos.length > 0)" class="text-gray-400">No
+                            Photos</span>
+                    </td>
+                    <td class="px-4 py-3 text-sm">
+                        <span class="inline-flex items-center py-1 px-2 rounded-full text-xs font-medium" [ngClass]="{
+                                'bg-yellow-100 text-yellow-800': request.status === 'pending',
+                                'bg-green-100 text-green-800': request.status === 'occupied',
+                                'bg-blue-100 text-blue-800': request.status === 'in_progress',
+                                'bg-indigo-100 text-indigo-800': request.status === 'validated',
+                                'bg-red-100 text-red-800': request.status === 'rejected'
+                            }">
+                            {{ request.status }}
+                        </span>
+                    </td>
+                    <td class="px-4 py-3 text-sm">
+                        <div class="flex items-center space-x-2">
+                            <select [formControl]="statusControls[request.id]"
+                                (change)="onStatusChange(request.id, $event)"
+                                class="bg-emerald-700 text-white py-1 px-2 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors duration-200 text-xs">
+                                <option *ngFor="let status of statuses" [value]="status">
+                                    {{ status }}
+                                </option>
+                            </select>
+                            <button (click)="updateStatus(request.id)"
+                                class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-1 px-2 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors duration-200 text-xs">
+                                Update
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </div>
