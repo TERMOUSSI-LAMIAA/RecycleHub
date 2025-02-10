@@ -18,7 +18,7 @@
                         {{ request.status }}
                     </span>
                 </div>
-                
+
                 <div class="space-y-3 text-gray-600">
                     <p class="flex items-center">
                         <span class="w-32 font-medium">Date:</span>
@@ -34,10 +34,14 @@
                             {{ detail.wasteType }} ({{ detail.estimatedWeight }}g)
                         </span>
                     </div>
+                    <!-- Image Display -->
+                    <div class="flex flex-wrap gap-2 mt-3">
+                        <img *ngFor="let photo of request.photos" [src]="photo" alt="Collection Photo"
+                            class="w-24 h-24 object-cover border rounded" />
+                    </div>
                 </div>
 
-                <div *ngIf="request.status === 'pending'"
-                    class="mt-6 flex space-x-3">
+                <div *ngIf="request.status === 'pending'" class="mt-6 flex space-x-3">
                     <button (click)="editRequest(request)"
                         class="flex-1 bg-amber-500 text-white px-4 py-2 rounded-lg hover:bg-amber-600 transition-colors duration-300">
                         Edit
@@ -61,9 +65,7 @@
     <div *ngIf="showRequestForm"
         class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 animate-fadeScale">
         <div class="bg-white rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl">
-            <app-request-form
-                (formSubmitted)="onFormSubmitted($event)"
-                [requestToEdit]="currentRequest"
+            <app-request-form (formSubmitted)="onFormSubmitted($event)" [requestToEdit]="currentRequest"
                 (formCancelled)="showRequestForm = false">
             </app-request-form>
         </div>

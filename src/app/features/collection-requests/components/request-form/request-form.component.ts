@@ -29,8 +29,10 @@ export class RequestFormComponent {
     '13:00-14:00', '14:00-15:00', '15:00-16:00',
     '16:00-17:00', '17:00-18:00'
   ];
-  selectedPhotos: string[] = [];
-
+  // selectedPhotos: string[] = [];
+  imagePreviews: string[] = []; // For image previews
+  selectedFiles: File[] = [];
+  
   errorMessage: string | null = null;
   error$: Observable<string | null>;
   constructor(
@@ -42,7 +44,8 @@ export class RequestFormComponent {
       collectAddress: ['', Validators.required],
       scheduledDate: [null, [Validators.required, futureDateValidator()]],
       scheduledTimeSlot: ['', Validators.required],
-      additionalNotes: ['']
+      additionalNotes: [''],
+      photos: [[]]
     });
     // Initialize weight controls for each waste type
     this.wasteTypes.forEach(type => {
@@ -89,8 +92,9 @@ export class RequestFormComponent {
         control.setValue(detail.estimatedWeight);
       }
     });
-    this.selectedPhotos = this.requestToEdit!.photos || [];
+    this.imagePreviews = this.requestToEdit!.photos || [];
   }
+  
   ngOnChanges(changes: SimpleChanges) {
     if (changes['requestToEdit']) {
       if (this.requestToEdit) {
@@ -104,7 +108,9 @@ export class RequestFormComponent {
   resetForm() {
     this.requestForm.reset(); // Reset all form control values to null
     this.selectedWasteTypes.clear();
-    this.selectedPhotos = []; // Clear selected photos
+    // this.selectedPhotos = []; // Clear selected photos
+    this.imagePreviews = []; // Clear selected photos
+    this.selectedFiles = [];
 
     this.wasteTypes.forEach(type => {
       const control = this.getWeightControl(type);
@@ -143,15 +149,17 @@ export class RequestFormComponent {
   }
 
 
-  onFileChange(event: any) {
-    const files = event.target.files;
-    this.selectedPhotos = [];
-    for (let i = 0; i < files.length; i++) {
+  onFileChange(event: any): void {
+    this.selectedFiles = Array.from(event.target.files); // Store the selected files
+
+    this.imagePreviews = []; // Clear existing previews
+    for (let i = 0; i < this.selectedFiles.length; i++) {
       const reader = new FileReader();
       reader.onload = (e: any) => {
-        this.selectedPhotos.push(e.target.result);
+        this.imagePreviews.push(e.target.result); // push each DataUrl to the array
+        this.requestForm.patchValue({ photos: this.imagePreviews }); //Adding to the form
       };
-      reader.readAsDataURL(files[i]);
+      reader.readAsDataURL(this.selectedFiles[i]);
     }
   }
 
@@ -176,7 +184,8 @@ export class RequestFormComponent {
       const requestData = {
         ...formValue,
         wasteDetails,
-        photos: this.selectedPhotos
+        // photos: this.selectedPhotos
+        photos: this.imagePreviews
       };
 
       if (this.requestToEdit) {
