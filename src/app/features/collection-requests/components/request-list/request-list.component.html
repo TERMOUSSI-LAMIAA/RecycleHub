@@ -28,6 +28,14 @@
                         <span class="w-32 font-medium">Créneau:</span>
                         {{ request.scheduledTimeSlot }}
                     </p>
+                    <p class="flex items-center">
+                        <span class="w-32 font-medium">Adresse:</span>
+                        {{ request.collectAddress }}
+                    </p>
+                    <p class="flex items-center">
+                        <span class="w-32 font-medium">Notes:</span>
+                        {{ request.additionalNotes ? request.additionalNotes : 'No Notes' }}
+                    </p>
                     <div class="flex flex-wrap gap-2 mt-3">
                         <span *ngFor="let detail of request.wasteDetails"
                             class="inline-block py-1 px-3 bg-emerald-100 text-emerald-700 rounded-full text-sm">

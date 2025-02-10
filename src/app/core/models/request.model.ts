@@ -21,9 +21,7 @@ export interface WasteDetail {
 export interface CollectionRequest {
     id: string;
     userId: string;
-    // wasteTypes: WasteType[];
     wasteDetails: WasteDetail[];
-    // estimatedWeight: number;
     collectAddress: string;
     scheduledDate: Date;
     scheduledTimeSlot: string; 
