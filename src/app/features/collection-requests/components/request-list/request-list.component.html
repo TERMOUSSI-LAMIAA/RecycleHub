@@ -1,57 +1,71 @@
-<div class="container mx-auto p-4">
-    <div class="flex justify-between items-center mb-6">
-        <h1 class="text-2xl font-bold">Mes Demandes de Collecte</h1>
-        <button (click)="openNewRequestForm()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+<div class="container mx-auto p-6 bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
+    <div class="flex justify-between items-center mb-8 animate-slideIn">
+        <h1 class="text-3xl font-bold text-gray-800">Mes Demandes de Collecte</h1>
+        <button (click)="openNewRequestForm()"
+            class="bg-emerald-600 text-white px-6 py-3 rounded-lg hover:bg-emerald-700 transform hover:scale-105 transition-all duration-300 shadow-lg">
             New Request
         </button>
     </div>
 
-    <!-- Request List -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <ng-container *ngIf="(requests$ | async) as requests; else loading">
-            <div *ngFor="let request of requests" class="border rounded-lg p-4 shadow-sm">
-                <div class="font-bold mb-2">Demande #{{ request.id }}</div>
-                <div class="text-sm text-gray-600 mb-2">{{ request.scheduledDate | date }}</div>
-                <div class="space-y-1">
-                    <p><strong>Status:</strong> {{ request.status }}</p>
-                    <p><strong>Types de déchets:</strong>
-                        <span *ngFor="let detail of request.wasteDetails; let last = last">
-                            {{ detail.wasteType }}{{ !last ? ', ' : '' }}
-                        </span>
+            <div *ngFor="let request of requests"
+                class="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 animate-fadeScale border border-gray-100">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="font-bold text-lg text-gray-800">Demande #{{ request.id }}</div>
+                    <span [ngClass]="'status-' + request.status.toLowerCase()"
+                        class="inline-block py-1 px-3 rounded-full text-white text-sm">
+                        {{ request.status }}
+                    </span>
+                </div>
+                
+                <div class="space-y-3 text-gray-600">
+                    <p class="flex items-center">
+                        <span class="w-32 font-medium">Date:</span>
+                        {{ request.scheduledDate | date }}
                     </p>
-                    <p><strong>Poids estimé:</strong>
-                        <span *ngFor="let detail of request.wasteDetails; let last = last">
-                            {{ detail.estimatedWeight }}g{{ !last ? ', ' : '' }}
-                        </span>
+                    <p class="flex items-center">
+                        <span class="w-32 font-medium">Créneau:</span>
+                        {{ request.scheduledTimeSlot }}
                     </p>
-                    <p><strong>Créneau horaire:</strong> {{ request.scheduledTimeSlot }}</p>
+                    <div class="flex flex-wrap gap-2 mt-3">
+                        <span *ngFor="let detail of request.wasteDetails"
+                            class="inline-block py-1 px-3 bg-emerald-100 text-emerald-700 rounded-full text-sm">
+                            {{ detail.wasteType }} ({{ detail.estimatedWeight }}g)
+                        </span>
+                    </div>
                 </div>
 
-                <!-- Edit and Delete Buttons -->
-                <div *ngIf="request.status === 'pending'" class="mt-4 flex space-x-2">
+                <div *ngIf="request.status === 'pending'"
+                    class="mt-6 flex space-x-3">
                     <button (click)="editRequest(request)"
-                        class="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600">
+                        class="flex-1 bg-amber-500 text-white px-4 py-2 rounded-lg hover:bg-amber-600 transition-colors duration-300">
                         Edit
                     </button>
                     <button (click)="deleteRequest(request.id)"
-                        class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">
+                        class="flex-1 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors duration-300">
                         Delete
                     </button>
                 </div>
             </div>
         </ng-container>
 
-        <!-- Loading State -->
         <ng-template #loading>
-            <div class="text-center text-gray-500">Loading requests...</div>
+            <div class="col-span-full flex justify-center items-center py-12">
+                <div class="loading-shimmer w-full h-32 rounded-xl"></div>
+            </div>
         </ng-template>
     </div>
 
-    <!-- Overlay Form -->
-    <div *ngIf="showRequestForm" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div class="bg-white rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <app-request-form (formSubmitted)="onFormSubmitted($event)" [requestToEdit]="currentRequest"
-                (formCancelled)="showRequestForm = false"></app-request-form>
+    <!-- Modal Overlay -->
+    <div *ngIf="showRequestForm"
+        class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 animate-fadeScale">
+        <div class="bg-white rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl">
+            <app-request-form
+                (formSubmitted)="onFormSubmitted($event)"
+                [requestToEdit]="currentRequest"
+                (formCancelled)="showRequestForm = false">
+            </app-request-form>
         </div>
     </div>
 </div>

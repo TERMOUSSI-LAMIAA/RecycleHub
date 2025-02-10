@@ -18,6 +18,7 @@ export class ProfileComponent implements OnInit {
   profileForm: FormGroup;
   currentUser: User | null = null;
   updateSuccess: boolean = false;
+  imageUrl: string | null = null; 
 
   constructor(
     private fb: FormBuilder,
@@ -38,13 +39,32 @@ export class ProfileComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Fetch the current user data when the component initializes
     this.authService.currentUser$.subscribe(user => {
       if (user) {
         this.currentUser = user;
-        this.profileForm.patchValue(user); // Populate form with current user data
+        this.profileForm.patchValue(user); 
+
+        this.imageUrl = user.profileImage || null; 
       }
     });
+  }
+
+  onFileSelected(event: any): void {
+    const file: File = event.target.files[0];
+    if (file) {
+      this.readFile(file);
+    }
+  }
+
+  readFile(file: File): void {
+    const reader = new FileReader();
+
+    reader.onload = (e: any) => {
+      this.imageUrl = e.target.result; // Set the preview URL
+      this.profileForm.patchValue({ profileImage: this.imageUrl }); // Store in form
+    };
+
+    reader.readAsDataURL(file); // Read as Data URL (base64)
   }
 
   onSubmit(): void {
@@ -80,4 +100,6 @@ export class ProfileComponent implements OnInit {
       });
     }
   }
+
+
 }

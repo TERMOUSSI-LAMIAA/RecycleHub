@@ -1,0 +1,52 @@
+// Profile Page Styles
+.profile-container {
+  min-height: 100vh;
+  
+  .form-input {
+    @apply w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 transition-all duration-200;
+    
+    &:hover {
+      @apply border-emerald-400;
+    }
+  }
+  
+  .form-group {
+    position: relative;
+    
+    label {
+      transition: all 0.2s ease;
+    }
+    
+    input:focus + label {
+      @apply text-emerald-600;
+    }
+  }
+}
+
+// Animation keyframes
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Success notification animation
+.success-notification {
+  animation: slideIn 0.3s ease-out;
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .profile-container {
+    padding: 1rem;
+    
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+  }
+}
