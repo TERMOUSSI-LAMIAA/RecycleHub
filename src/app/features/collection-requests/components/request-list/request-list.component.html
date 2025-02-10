@@ -15,7 +15,7 @@
                     <div class="font-bold text-lg text-gray-800">Request #{{ request.id }}</div>
                 <span class="inline-block py-1 px-3 rounded-full text-white text-sm" [ngClass]="{
                     'bg-yellow-500': request.status.toLowerCase() === 'pending',
-                    'bg-gray-500': request.status.toLowerCase() === 'occupied',
+                    'bg-gray-600-500': request.status.toLowerCase() === 'occupied',
                     'bg-blue-500': request.status.toLowerCase() === 'in_progress',
                      'bg-red-500': request.status.toLowerCase() === 'rejected', 
                     'bg-green-500': request.status.toLowerCase() === 'validated' 
