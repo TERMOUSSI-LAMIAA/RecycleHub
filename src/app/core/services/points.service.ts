@@ -13,14 +13,12 @@ export class PointsService {
 
     constructor(private localStorageService: LocalStorageService) { }
 
-    // Get user points
     getUserPoints(userId: string): Observable<number> {
         const allPoints: Points[] = this.getAllPoints();
         const userPoints = allPoints.find(p => p.userId === userId);
         return of(userPoints ? userPoints.totalPoints : 0);
     }
 
-    // Add points based on waste type and weight
     addPoints(userId: string, wasteType: WasteType, weight: number): Observable<number> {
         let pointsEarned = this.calculatePoints(wasteType, weight);
 
@@ -38,7 +36,6 @@ export class PointsService {
         return of(userPoints.totalPoints);
     }
 
-    // Private helper: Calculate points based on type & weight
     private calculatePoints(wasteType: WasteType, weight: number): number {
         const pointsPerKg = {
             plastic: 2,
@@ -47,22 +44,19 @@ export class PointsService {
             metal: 5
         };
 
-        const kgWeight = weight / 1000; // Convert grams to kg
+        const kgWeight = weight / 1000; //  grams to kg
         return (pointsPerKg[wasteType] || 1) * kgWeight;
     }
 
-    // Private helper: Retrieve all points records
     private getAllPoints(): Points[] {
         const pointsStr = this.localStorageService.getItem(this.POINTS_KEY);
         return pointsStr ? JSON.parse(pointsStr) : [];
     }
 
-    // Private helper: Save points records
     private savePoints(points: Points[]): void {
         this.localStorageService.setItem(this.POINTS_KEY, JSON.stringify(points));
     }
     
-    // Convert points to shopping vouchers
     convertPointsToVoucher(userId: string): Observable<{ voucher: number; remainingPoints: number }> {
         let allPoints = this.getAllPoints();
         let userPoints = allPoints.find(p => p.userId === userId);
@@ -71,7 +65,6 @@ export class PointsService {
             return of({ voucher: 0, remainingPoints: userPoints ? userPoints.totalPoints : 0 });
         }
 
-        // Conversion logic
         let voucher = 0;
         let pointsUsed = 0;
 
@@ -86,7 +79,6 @@ export class PointsService {
             pointsUsed = 100;
         }
 
-        // Deduct used points
         userPoints.totalPoints -= pointsUsed;
         this.savePoints(allPoints);
 

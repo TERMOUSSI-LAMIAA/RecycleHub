@@ -10,7 +10,6 @@ export class AuthService {
   private readonly USERS_KEY = 'users';
   private readonly CURRENT_USER_KEY = 'currentUser';
 
-  // Add a BehaviorSubject to track authentication state
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
 
@@ -23,6 +22,7 @@ export class AuthService {
     const user = this.getCurrentUser();
     this.currentUserSubject.next(user);
   }
+  
   isAuthenticated(): boolean {
     return this.currentUserSubject.value !== null;
   }
@@ -120,8 +120,8 @@ export class AuthService {
         users[index] = { ...users[index], ...updatedUserData };
         this.localStorageService.setItem(this.USERS_KEY, JSON.stringify(users));
         this.localStorageService.setItem(this.CURRENT_USER_KEY, JSON.stringify(users[index]));
-        this.currentUserSubject.next(users[index]); // Update current user
-        return of(users[index]).pipe(delay(1000)); // Simulate delay for demo purposes
+        this.currentUserSubject.next(users[index]);
+        return of(users[index]).pipe(delay(1000)); 
       }
     }
 
@@ -136,8 +136,8 @@ export class AuthService {
       const updatedUsers = users.filter(u => u.id !== currentUser.id);
       this.localStorageService.setItem(this.USERS_KEY, JSON.stringify(updatedUsers));
       this.localStorageService.removeItem(this.CURRENT_USER_KEY);
-      this.currentUserSubject.next(null); // Clear current user
-      return of(undefined).pipe(delay(1000)); // Simulate delay for demo purposes
+      this.currentUserSubject.next(null); 
+      return of(undefined).pipe(delay(1000));
     }
 
     return throwError(() => new Error('User not found'));

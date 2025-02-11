@@ -25,8 +25,8 @@ export class PointsConversionComponentComponent implements OnInit {
   }
 
   convertPoints(): void {
-    this.errorMessage = null; // Clear any previous errors
-    const user = this.authService.getCurrentUser(); // Get current user
+    this.errorMessage = null; 
+    const user = this.authService.getCurrentUser(); 
     if (!user) {
       this.errorMessage = 'User not authenticated.';
       return;

@@ -1,7 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { AuthService } from '../../../../core/services/auth.service';
-import { ActivatedRoute, Router } from '@angular/router';
-import { CollectionRequestService } from '../../../../core/services/collection-request.service';
+
 import { CollectionRequest } from '../../../../core/models/request.model';
 import { RequestFormComponent } from '../request-form/request-form.component';
 import { CommonModule } from '@angular/common';

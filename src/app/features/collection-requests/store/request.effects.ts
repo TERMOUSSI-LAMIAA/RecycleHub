@@ -13,11 +13,11 @@ export class CollectionRequestsEffects {
 
     loadRequests$ = createEffect(() =>
         this.actions$.pipe(
-            ofType(RequestActions.loadRequests),  // ✅ Ensure correct import
+            ofType(RequestActions.loadRequests),  
             mergeMap(() =>
                 this.requestService.getUserRequests().pipe(
-                    map(requests => RequestActions.loadRequestsSuccess({ requests })),  // ✅ Use correct action
-                    catchError(error => of(RequestActions.loadRequestsFailure({ error: error.message })))  // ✅ Ensure correct action
+                    map(requests => RequestActions.loadRequestsSuccess({ requests })),
+                    catchError(error => of(RequestActions.loadRequestsFailure({ error: error.message })))  
                 )
             )
         )
@@ -69,11 +69,11 @@ export class CollectionRequestsEffects {
     
     deleteRequest$ = createEffect(() =>
         this.actions$.pipe(
-            ofType(RequestActions.deleteRequest),  // ✅ Use correct action
+            ofType(RequestActions.deleteRequest),  
             mergeMap(({ requestId }) =>
                 this.requestService.deleteRequest(requestId).pipe(
-                    map(() => RequestActions.deleteRequestSuccess({ requestId })),  // ✅ Ensure correct action
-                    catchError(error => of(RequestActions.deleteRequestFailure({ error: error.message })))  // ✅ Ensure correct action
+                    map(() => RequestActions.deleteRequestSuccess({ requestId })),  
+                    catchError(error => of(RequestActions.deleteRequestFailure({ error: error.message })))  
                 )
             )
         )

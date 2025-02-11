@@ -25,16 +25,15 @@ export class ProfileComponent implements OnInit {
     private authService: AuthService,
     private router: Router
   ) {
-    // Initialize the form with validation
     this.profileForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]], // Required
-      firstName: ['', Validators.required], // Required
-      lastName: ['', Validators.required], // Required
-      address: ['', Validators.required], // Required
-      phone: ['', Validators.required], // Required
-      birthDate: ['', Validators.required], // Required
-      city: ['', Validators.required], // Required
-      profileImage: [''] // Optional field
+      email: ['', [Validators.required, Validators.email]], 
+      firstName: ['', Validators.required], 
+      lastName: ['', Validators.required], 
+      address: ['', Validators.required], 
+      phone: ['', Validators.required], 
+      birthDate: ['', Validators.required], 
+      city: ['', Validators.required], 
+      profileImage: [''] 
     });
   }
 
@@ -60,27 +59,26 @@ export class ProfileComponent implements OnInit {
     const reader = new FileReader();
 
     reader.onload = (e: any) => {
-      this.imageUrl = e.target.result; // Set the preview URL
-      this.profileForm.patchValue({ profileImage: this.imageUrl }); // Store in form
+      this.imageUrl = e.target.result; 
+      this.profileForm.patchValue({ profileImage: this.imageUrl }); 
     };
 
-    reader.readAsDataURL(file); // Read as Data URL (base64)
+    reader.readAsDataURL(file); 
   }
 
   onSubmit(): void {
     if (this.profileForm.valid) {
-      // Call update method from AuthService
       this.authService.updateUser(this.profileForm.value).pipe(
         catchError(error => {
           console.error('Update failed:', error.message);
-          return of(null); // Handle error appropriately
+          return of(null); 
         })
       ).subscribe(user => {
         if (user) {
           console.log('Profile updated successfully:', user);
           this.updateSuccess = true; 
           setTimeout(() => {
-            this.updateSuccess = false; // Reset success flag after a delay
+            this.updateSuccess = false; 
           }, 3000)        }
       });
     }
@@ -88,15 +86,14 @@ export class ProfileComponent implements OnInit {
 
   deleteAccount(): void {
     if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
-      // Call delete method from AuthService
       this.authService.deleteAccount().pipe(
         catchError(error => {
           console.error('Account deletion failed:', error.message);
-          return of(null); // Handle error appropriately
+          return of(null); 
         })
       ).subscribe(() => {
         console.log('Account deleted successfully');
-        this.router.navigate(['/login']); // Redirect after deletion
+        this.router.navigate(['/login']);
       });
     }
   }

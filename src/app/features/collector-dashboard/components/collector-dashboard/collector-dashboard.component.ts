@@ -20,7 +20,7 @@ export class CollectorDashboardComponent implements OnInit {
   requests$: Observable<CollectionRequest[]> | undefined;
   statuses = Object.values(RequestStatus);
   statusControls: { [requestId: string]: FormControl } = {};
-  selectedStatuses: { [requestId: string]: RequestStatus } = {};  // Track selected status for each request
+  selectedStatuses: { [requestId: string]: RequestStatus } = {};  
 
   constructor(private store: Store) {
     this.requests$ = this.store.select(selectRequests);
@@ -32,19 +32,19 @@ export class CollectorDashboardComponent implements OnInit {
     this.requests$?.subscribe(requests => {
       requests.forEach(request => {
         this.statusControls[request.id] = new FormControl(request.status);
-        this.selectedStatuses[request.id] = request.status; // Initialize selected status
+        this.selectedStatuses[request.id] = request.status; 
       });
     });
   }
 
   onStatusChange(requestId: string, event: Event) {
-    const selectElement = event.target as HTMLSelectElement;  // Cast the event target
-    const status = selectElement.value as RequestStatus;   // Access the value property
-    this.selectedStatuses[requestId] = status;  // Capture status on dropdown change
+    const selectElement = event.target as HTMLSelectElement;  
+    const status = selectElement.value as RequestStatus;   
+    this.selectedStatuses[requestId] = status;  
   }
 
   updateStatus(requestId: string) {
-    const status = this.selectedStatuses[requestId];  // Get selected status when button is clicked
+    const status = this.selectedStatuses[requestId];  
     this.store.dispatch(updateRequestStatus({ requestId: requestId, status: status }));
   }
 

@@ -29,8 +29,7 @@ export class RequestFormComponent {
     '13:00-14:00', '14:00-15:00', '15:00-16:00',
     '16:00-17:00', '17:00-18:00'
   ];
-  // selectedPhotos: string[] = [];
-  imagePreviews: string[] = []; // For image previews
+  imagePreviews: string[] = []; 
   selectedFiles: File[] = [];
   
   errorMessage: string | null = null;
@@ -47,7 +46,7 @@ export class RequestFormComponent {
       additionalNotes: [''],
       photos: [[]]
     });
-    // Initialize weight controls for each waste type
+    
     this.wasteTypes.forEach(type => {
       this.requestForm.addControl(
         this.getWeightControlName(type),
@@ -76,14 +75,12 @@ export class RequestFormComponent {
       this.getWeightControl(type)?.disable();
     });
 
-    // Basic form values
     this.requestForm.patchValue({
       collectAddress: this.requestToEdit!.collectAddress,
       scheduledDate: this.requestToEdit!.scheduledDate,
       scheduledTimeSlot: this.requestToEdit!.scheduledTimeSlot,
       additionalNotes: this.requestToEdit!.additionalNotes
     });
-    // Handle waste details
     this.requestToEdit!.wasteDetails.forEach(detail => {
       this.selectedWasteTypes.add(detail.wasteType);
       const control = this.getWeightControl(detail.wasteType);
@@ -106,10 +103,9 @@ export class RequestFormComponent {
   }
 
   resetForm() {
-    this.requestForm.reset(); // Reset all form control values to null
+    this.requestForm.reset();
     this.selectedWasteTypes.clear();
-    // this.selectedPhotos = []; // Clear selected photos
-    this.imagePreviews = []; // Clear selected photos
+    this.imagePreviews = []; 
     this.selectedFiles = [];
 
     this.wasteTypes.forEach(type => {
@@ -150,14 +146,13 @@ export class RequestFormComponent {
 
 
   onFileChange(event: any): void {
-    this.selectedFiles = Array.from(event.target.files); // Store the selected files
-
-    this.imagePreviews = []; // Clear existing previews
+    this.selectedFiles = Array.from(event.target.files); 
+    this.imagePreviews = []; 
     for (let i = 0; i < this.selectedFiles.length; i++) {
       const reader = new FileReader();
       reader.onload = (e: any) => {
-        this.imagePreviews.push(e.target.result); // push each DataUrl to the array
-        this.requestForm.patchValue({ photos: this.imagePreviews }); //Adding to the form
+        this.imagePreviews.push(e.target.result);
+        this.requestForm.patchValue({ photos: this.imagePreviews }); 
       };
       reader.readAsDataURL(this.selectedFiles[i]);
     }
@@ -175,7 +170,6 @@ export class RequestFormComponent {
     if (this.requestForm.valid) {
       const formValue = this.requestForm.value;
 
-      // Create wasteDetails array from selected types and their weights
       const wasteDetails: WasteDetail[] = Array.from(this.selectedWasteTypes).map(type => ({
         wasteType: type,
         estimatedWeight: Number(this.getWeightControl(type)?.value)
@@ -184,7 +178,6 @@ export class RequestFormComponent {
       const requestData = {
         ...formValue,
         wasteDetails,
-        // photos: this.selectedPhotos
         photos: this.imagePreviews
       };
 
